@@ -1,0 +1,530 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TycheProject xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <TycheProjectFileVersion>2</TycheProjectFileVersion>
+  <TycheVersion>211.0.1.21203</TycheVersion>
+  <IsAuditingEnabled>false</IsAuditingEnabled>
+  <TycheProjectEngineContents>
+    <TycheEngine xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+      <FileVersion>1</FileVersion>
+      <LastLoadedEngineVersion>
+        <BuildNumber>0</BuildNumber>
+        <MajorVersionNumber>0</MajorVersionNumber>
+        <MinorVersionNumber>0</MinorVersionNumber>
+        <PatchNumber>0</PatchNumber>
+      </LastLoadedEngineVersion>
+      <Globals>
+        <ScenarioCount>10000</ScenarioCount>
+        <RandomSeed>749216459</RandomSeed>
+        <UsePerNodeSeeding>true</UsePerNodeSeeding>
+        <AutomaticClearResults>false</AutomaticClearResults>
+        <AutomaticFreeMemory>false</AutomaticFreeMemory>
+        <SparseVectorThreshold>0.01</SparseVectorThreshold>
+        <SIMDGlobalNumThreads>-1</SIMDGlobalNumThreads>
+        <ModelDescription></ModelDescription>
+        <ManagedGlobalNumThreads>-1</ManagedGlobalNumThreads>
+        <UseDependencyGroups>true</UseDependencyGroups>
+        <CheckIndexingVariables>false</CheckIndexingVariables>
+        <CheckVariablesAndTypes>false</CheckVariablesAndTypes>
+        <FatalReportLevel>Error</FatalReportLevel>
+        <IssueWarningForExperimentalFeatures>true</IssueWarningForExperimentalFeatures>
+        <CheckDimensionNames>None</CheckDimensionNames>
+        <CheckNonDistributedFunctions>None</CheckNonDistributedFunctions>
+        <ToolkitRequirements />
+        <ModelDeveloper></ModelDeveloper>
+        <ModelReviewer></ModelReviewer>
+        <ModelReviewDate></ModelReviewDate>
+        <ModelNextReviewDate></ModelNextReviewDate>
+      </Globals>
+      <TopLevelModelNodes>
+        <TycheNode xmlns="" i:type="TycheNodeOperation">
+          <fAttachedData i:nil="true" />
+          <NodeType>Operation</NodeType>
+          <Name>Operation</Name>
+          <Description></Description>
+          <Author>SmithEd</Author>
+          <Text>out DisplaySummary = Reindex(StringTrim(StringSplit(StringSplit(FileReadLines("./Input8.txt"), "|"), " ")), "I/O", "Digit");
+
+
+
+</Text>
+          <CacheResultValues>true</CacheResultValues>
+          <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+          <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+          <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+          <NumScenariosDefault>0</NumScenariosDefault>
+          <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+          <Breakpoints />
+          <NestedSettings xmlns="" i:type="TycheSettingsContainer">
+            <InputVariables />
+            <OutputVariables />
+            <IsContainer>false</IsContainer>
+            <RandomSeed>1535424799</RandomSeed>
+          </NestedSettings>
+          <Children />
+          <ChildrenEdges />
+        </TycheNode>
+        <TycheNode xmlns="" i:type="TycheNodeParallel">
+          <fAttachedData i:nil="true" />
+          <NodeType>Parallel</NodeType>
+          <Name>Parallel</Name>
+          <Description></Description>
+          <Author>SmithEd</Author>
+          <Text>argparallel DisplaySummary = Operation.DisplaySummary;
+
+Input = DisplaySummary[0];
+Output = DisplaySummary[1];
+
+//Process Input
+InputLengths = StringLength(Input);
+OutputLengths = StringLength(Output);
+InputSplitCells[Digits, Cell][IteratorSize(Input), InputLengths[Digits]] = StringSubstring(Input[Digits] , Cell, 1);
+OutputSplitCells[Digits, Cell][IteratorSize(Output), OutputLengths[Digits]] = StringSubstring(Output[Digits] , Cell, 1);
+
+//Find 0 
+Zero = SetsComplement(Where(InputSplitCells, InputLengths == 3)[0], Where(InputSplitCells, InputLengths == 2)[0])[0];
+
+//Remove 0
+MinusZero = StringReplace(Input, Zero, "");
+MinusZeroLengths = StringLength(MinusZero);
+MinusZeroSplitCells[Digits, Cell][IteratorSize(Input), MinusZeroLengths[Digits]] = StringSubstring(MinusZero[Digits] , Cell, 1);
+
+//Find 6
+MinusZero4Cells = Where(MinusZeroSplitCells, MinusZeroLengths == 4);
+MinusZero4CellLetters[Letters][Distinct(MinusZero4Cells)] = 0;
+MinusZero4CountLetters = Count[MinusZero4CellLetters, MinusZero4Cells](MinusZero4Cells);
+Six = Where(IndexingVariable(MinusZero4CountLetters), MinusZero4CountLetters == 4)[0];
+
+//Remove 6
+MinusSix = StringReplace(MinusZero, Six, "");
+MinusSixLengths = StringLength(MinusSix);
+MinusSixSplitCells[Digits, Cell][IteratorSize(Input), MinusSixLengths[Digits]] = StringSubstring(MinusSix[Digits] , Cell, 1);
+
+//Find 4
+MinusSix3Cells = Where(MinusSixSplitCells, MinusSixLengths == 3);
+MinusSix3CellLetters[Letters][Distinct(MinusSix3Cells)] = 0;
+MinusSix3CountLetters = Count[MinusSix3CellLetters, MinusSix3Cells](MinusSix3Cells);
+FourTest = Where(IndexingVariable(MinusSix3CountLetters), MinusSix3CountLetters == 1);
+Four = Where(IndexingVariable(MinusSix3CountLetters), MinusSix3CountLetters == 1)[0];
+
+//Remove 4
+MinusFour = StringReplace(MinusSix, Four, "");
+MinusFourLengths = StringLength(MinusFour);
+MinusFourSplitCells[Digits, Cell][IteratorSize(Input), MinusFourLengths[Digits]] = StringSubstring(MinusFour[Digits] , Cell, 1);
+
+//Find 1
+MinusFour2Cells = Where(MinusFourSplitCells, MinusFourLengths == 2);
+MinusFour2CellLetters[Letters][Distinct(MinusFour2Cells)] = 0;
+MinusFour2CountLetters = Count[MinusFour2CellLetters, MinusFour2Cells](MinusFour2Cells);
+One = Where(IndexingVariable(MinusFour2CountLetters), MinusFour2CountLetters == 3)[0];
+
+//Remove 1
+MinusOne = StringReplace(MinusFour, One, "");
+MinusOneLengths = StringLength(MinusOne);
+MinusOneSplitCells[Digits, Cell][IteratorSize(Input), MinusOneLengths[Digits]] = StringSubstring(MinusOne[Digits] , Cell, 1);
+
+//Find 2
+MinusOne2Cells = Where(MinusOneSplitCells, MinusOneLengths == 2);
+MinusOne2CellLetters[Letters][Distinct(MinusOneSplitCells)] = 0;
+MinusOne2CountLetters = Count[MinusOne2CellLetters, MinusOne2Cells](MinusOne2Cells);
+Two = Where(IndexingVariable(MinusOne2CountLetters), MinusOne2CountLetters == 2)[0];
+
+//Remove 2
+MinusTwo = StringReplace(MinusOne, Two, "");
+MinusTwoLengths = StringLength(MinusTwo);
+MinusTwoSplitCells[Digits, Cell][IteratorSize(Input), MinusTwoLengths[Digits]] = StringSubstring(MinusTwo[Digits] , Cell, 1);
+
+//Find 5
+MinusTwo1Cells = Where(MinusTwoSplitCells, MinusTwoLengths == 1);
+MinusTwo1CellLetters[Letters][Distinct(MinusTwo1Cells)] = 0;
+MinusTwo1CountLetters = Count[MinusTwo1CellLetters, MinusTwo1Cells](MinusTwo1Cells);
+Five = Where(IndexingVariable(MinusTwo1CountLetters), MinusTwo1CountLetters == 1)[0];
+
+//Remove 5
+MinusFive = StringReplace(MinusTwo, Five, "");
+MinusFiveLengths = StringLength(MinusFive);
+MinusFiveSplitCells[Digits, Cell][IteratorSize(Input), MinusFiveLengths[Digits]] = StringSubstring(MinusFive[Digits] , Cell, 1);
+
+//Find 3
+Three = Distinct(MinusFiveSplitCells)[0];
+
+//Id Cells
+CellId = {Zero , One, Two, Three, Four, Five, Six};
+OutputScores[OutputSplitCells] = IntegerIndex(CellId, OutputSplitCells[Digits,Cell]);
+OutputTotals = ToInteger(Sum[Digits](2 ^ OutputScores));
+
+NumberScores[Number][10] = {63,6,91,79,102,109,125,7,127,111};
+
+OutputDigits[OutputTotals] = IntegerIndex(NumberScores,OutputTotals[Digits]);
+
+out OutputValue[OutputDigits] = Sum(OutputDigits [Digits] * 10 ^ (3-Digits));</Text>
+          <CacheResultValues>true</CacheResultValues>
+          <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+          <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+          <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+          <NumScenariosDefault>0</NumScenariosDefault>
+          <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+          <Breakpoints />
+          <NestedSettings xmlns="" i:type="TycheSettingsParallel">
+            <InputVariables />
+            <OutputVariables />
+            <IsContainer>false</IsContainer>
+            <RandomSeed>1535424799</RandomSeed>
+            <ParalleliseBy>Scenarios</ParalleliseBy>
+            <ParallelisationMethod>Threads</ParallelisationMethod>
+            <LocalScenarioCount>0</LocalScenarioCount>
+            <NumThreads>8</NumThreads>
+            <NumberOfSimChunks>1</NumberOfSimChunks>
+            <AutomaticallyGlueSimChunks>false</AutomaticallyGlueSimChunks>
+            <FreeChunkAllocationsAfterExecution>false</FreeChunkAllocationsAfterExecution>
+            <Grid>
+              <GridTransferType>ByRequest</GridTransferType>
+              <HostName>localhost</HostName>
+              <MaximumGridRequests>100</MaximumGridRequests>
+              <NodesJobTemplate></NodesJobTemplate>
+              <PortRangeHighest>7460</PortRangeHighest>
+              <PortRangeLowest>7443</PortRangeLowest>
+              <Priority>
+                <Value>2000</Value>
+              </Priority>
+              <RuntimeDirectory i:nil="true" />
+              <UseGridEmulation>false</UseGridEmulation>
+              <GridSettingsOrigin>FromParent</GridSettingsOrigin>
+            </Grid>
+            <ReseedEachExecution>true</ReseedEachExecution>
+          </NestedSettings>
+          <Children>
+            <TycheNode xmlns="" i:type="TycheNodeNestedInputs">
+              <fAttachedData i:nil="true" />
+              <NodeType>NestedInputs</NodeType>
+              <Name>Inputs</Name>
+              <Description></Description>
+              <Author>SmithEd</Author>
+              <Text></Text>
+              <CacheResultValues>true</CacheResultValues>
+              <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+              <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+              <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+              <NumScenariosDefault>0</NumScenariosDefault>
+              <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+              <Breakpoints />
+            </TycheNode>
+            <TycheNode xmlns="" i:type="TycheNodeNestedOutputs">
+              <fAttachedData i:nil="true" />
+              <NodeType>NestedOutputs</NodeType>
+              <Name>Outputs</Name>
+              <Description></Description>
+              <Author>SmithEd</Author>
+              <Text></Text>
+              <CacheResultValues>true</CacheResultValues>
+              <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+              <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+              <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+              <NumScenariosDefault>0</NumScenariosDefault>
+              <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+              <Breakpoints />
+            </TycheNode>
+          </Children>
+          <ChildrenEdges />
+        </TycheNode>
+        <TycheNode xmlns="" i:type="TycheNodeOperation">
+          <fAttachedData i:nil="true" />
+          <NodeType>Operation</NodeType>
+          <Name>Operation 2</Name>
+          <Description></Description>
+          <Author>SmithEd</Author>
+          <Text>arg OutputValue = Parallel.OutputValue;
+
+P2 = Sum(OutputValue);
+</Text>
+          <CacheResultValues>true</CacheResultValues>
+          <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+          <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+          <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+          <NumScenariosDefault>0</NumScenariosDefault>
+          <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+          <Breakpoints />
+          <NestedSettings xmlns="" i:type="TycheSettingsContainer">
+            <InputVariables />
+            <OutputVariables />
+            <IsContainer>false</IsContainer>
+            <RandomSeed>1058333815</RandomSeed>
+          </NestedSettings>
+          <Children />
+          <ChildrenEdges />
+        </TycheNode>
+        <TycheNode xmlns="" i:type="TycheNodeOperation">
+          <fAttachedData i:nil="true" />
+          <NodeType>Operation</NodeType>
+          <Name>Operation 4</Name>
+          <Description></Description>
+          <Author>SmithEd</Author>
+          <Text>out DisplaySummary = Reindex(StringTrim(StringSplit(StringSplit(FileReadLines("./Input8.txt"), "|"), " ")), "I/O", "Digit");
+
+//Unpack Data
+Input = DisplaySummary[0];
+Output = DisplaySummary[1];
+
+
+//Calculate Correct Digit Signature
+Segments[Digit,Seg][10,StringToLower({"a", "b", "c", "d", "e", "f", "g"})] = {{True, True,True, True,True, True,False},
+																																{False, True,True, False,False, False,False},
+																																{True, True,False, True,True, False,True},
+																																{True, True,True, True,False, False,True},
+																																{False, True, True, False,False, True,True},
+																																{True, False,True, True,False, True,True},
+																																{True, False,True, True,True, True,True},
+																																{True, True,True, False,False, False,False},
+																																{True, True,True, True,True, True,True},
+																																{True, True,True, True,False, True,True}};
+
+SegOccurances = Sum[Seg](ToInteger(Segments));
+AssignSegmentOccurance[Segments] = Segments[Digit,Seg] ? SegOccurances [Seg] : Blank ;
+DigitSig = Sum[Digit, mbla](AssignSegmentOccurance);
+
+//Input segment in digit test
+SegInp[Segments] = StringContains(Input[Digit], Seg, True);
+
+//Output segment in digit test
+SegmentsOutput = Take(Segments, 4);
+SegOut[SegmentsOutput] = StringContains(Output[Digit], Seg, True);
+
+//Number of occurances of each segment in input data
+InputSegOccurances = Sum[Seg, sims](ToInteger(SegInp));
+
+//Replace segment letter with number of occurrances in input data.  Sum to find signature
+OutputSegOccurances[SegmentsOutput] = SegOut[Digit,Seg] ? InputSegOccurances[Seg] : Blank ;
+DigitOut = Sum[Digit, mbla, sims](OutputSegOccurances);
+
+//Compare output signature to correct signature lookup to reveal actual digit
+LookupOutputDigit[DigitOut] = MultiColumnIndexOf(DigitOut[Digit], ToStochasticVariable(DigitSig));
+
+//Profit
+LoadUp[LookupOutputDigit] = LookupOutputDigit[Digit] * 10^(3-Digit);
+Answer = Sum(LoadUp);
+
+</Text>
+          <CacheResultValues>true</CacheResultValues>
+          <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+          <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+          <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+          <NumScenariosDefault>0</NumScenariosDefault>
+          <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+          <Breakpoints />
+          <NestedSettings xmlns="" i:type="TycheSettingsContainer">
+            <InputVariables />
+            <OutputVariables />
+            <IsContainer>false</IsContainer>
+            <RandomSeed>1058333815</RandomSeed>
+          </NestedSettings>
+          <Children />
+          <ChildrenEdges />
+        </TycheNode>
+      </TopLevelModelNodes>
+      <TopLevelModelEdges>
+        <TycheEdge>
+          <SourceNodeFullName>Operation</SourceNodeFullName>
+          <SinkNodeFullName>Parallel</SinkNodeFullName>
+        </TycheEdge>
+        <TycheEdge>
+          <SourceNodeFullName>Parallel</SourceNodeFullName>
+          <SinkNodeFullName>Operation 2</SinkNodeFullName>
+        </TycheEdge>
+      </TopLevelModelEdges>
+    </TycheEngine>
+  </TycheProjectEngineContents>
+  <TycheProjectGUIContents>
+    <TycheModel xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+      <FileVersion>1</FileVersion>
+      <TopLevelGuiNodes>
+        <TycheGuiNode>
+          <Name>Operation</Name>
+          <ElementLeft>-304</ElementLeft>
+          <ElementTop>65</ElementTop>
+          <ElementWidth>250</ElementWidth>
+          <ElementHeight>90</ElementHeight>
+          <Children />
+          <VisualNodeSettings>
+            <ShowIcon>true</ShowIcon>
+            <ShowTitle>true</ShowTitle>
+            <ShowBorder>true</ShowBorder>
+            <ShowBackground>true</ShowBackground>
+            <IconString></IconString>
+            <TitleLocation>Embed</TitleLocation>
+            <TitleColourString>#FF000000</TitleColourString>
+            <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+            <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+            <BorderColourString>#FF800080</BorderColourString>
+            <IsIconStandardSize>true</IsIconStandardSize>
+            <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+            <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+            <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+            <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+            <FloatingTitleWidth>120</FloatingTitleWidth>
+            <FloatingTitleHeight>40</FloatingTitleHeight>
+          </VisualNodeSettings>
+          <OutliningStatus />
+          <IsBackwardsNode>false</IsBackwardsNode>
+          <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+        </TycheGuiNode>
+        <TycheGuiNode>
+          <Name>Parallel</Name>
+          <ElementLeft>-355</ElementLeft>
+          <ElementTop>255</ElementTop>
+          <ElementWidth>250</ElementWidth>
+          <ElementHeight>90</ElementHeight>
+          <Children>
+            <TycheGuiNode>
+              <Name>Inputs</Name>
+              <ElementLeft>250</ElementLeft>
+              <ElementTop>90</ElementTop>
+              <ElementWidth>250</ElementWidth>
+              <ElementHeight>90</ElementHeight>
+              <Children />
+              <VisualNodeSettings>
+                <ShowIcon>true</ShowIcon>
+                <ShowTitle>true</ShowTitle>
+                <ShowBorder>true</ShowBorder>
+                <ShowBackground>true</ShowBackground>
+                <IconString></IconString>
+                <TitleLocation>Embed</TitleLocation>
+                <TitleColourString>#FF000000</TitleColourString>
+                <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+                <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+                <BorderColourString>#FF800080</BorderColourString>
+                <IsIconStandardSize>true</IsIconStandardSize>
+                <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+                <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+                <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+                <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+                <FloatingTitleWidth>120</FloatingTitleWidth>
+                <FloatingTitleHeight>40</FloatingTitleHeight>
+              </VisualNodeSettings>
+              <OutliningStatus />
+              <IsBackwardsNode>false</IsBackwardsNode>
+              <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+            </TycheGuiNode>
+            <TycheGuiNode>
+              <Name>Outputs</Name>
+              <ElementLeft>250</ElementLeft>
+              <ElementTop>540</ElementTop>
+              <ElementWidth>250</ElementWidth>
+              <ElementHeight>90</ElementHeight>
+              <Children />
+              <VisualNodeSettings>
+                <ShowIcon>true</ShowIcon>
+                <ShowTitle>true</ShowTitle>
+                <ShowBorder>true</ShowBorder>
+                <ShowBackground>true</ShowBackground>
+                <IconString></IconString>
+                <TitleLocation>Embed</TitleLocation>
+                <TitleColourString>#FF000000</TitleColourString>
+                <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+                <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+                <BorderColourString>#FF800080</BorderColourString>
+                <IsIconStandardSize>true</IsIconStandardSize>
+                <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+                <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+                <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+                <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+                <FloatingTitleWidth>120</FloatingTitleWidth>
+                <FloatingTitleHeight>40</FloatingTitleHeight>
+              </VisualNodeSettings>
+              <OutliningStatus />
+              <IsBackwardsNode>false</IsBackwardsNode>
+              <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+            </TycheGuiNode>
+          </Children>
+          <VisualNodeSettings>
+            <ShowIcon>true</ShowIcon>
+            <ShowTitle>true</ShowTitle>
+            <ShowBorder>true</ShowBorder>
+            <ShowBackground>true</ShowBackground>
+            <IconString></IconString>
+            <TitleLocation>Embed</TitleLocation>
+            <TitleColourString>#FF000000</TitleColourString>
+            <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+            <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+            <BorderColourString>#FF800080</BorderColourString>
+            <IsIconStandardSize>true</IsIconStandardSize>
+            <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+            <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+            <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+            <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+            <FloatingTitleWidth>120</FloatingTitleWidth>
+            <FloatingTitleHeight>40</FloatingTitleHeight>
+          </VisualNodeSettings>
+          <OutliningStatus />
+          <IsBackwardsNode>false</IsBackwardsNode>
+          <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+        </TycheGuiNode>
+        <TycheGuiNode>
+          <Name>Operation 2</Name>
+          <ElementLeft>-280</ElementLeft>
+          <ElementTop>470</ElementTop>
+          <ElementWidth>250</ElementWidth>
+          <ElementHeight>90</ElementHeight>
+          <Children />
+          <VisualNodeSettings>
+            <ShowIcon>true</ShowIcon>
+            <ShowTitle>true</ShowTitle>
+            <ShowBorder>true</ShowBorder>
+            <ShowBackground>true</ShowBackground>
+            <IconString></IconString>
+            <TitleLocation>Embed</TitleLocation>
+            <TitleColourString>#FF000000</TitleColourString>
+            <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+            <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+            <BorderColourString>#FF800080</BorderColourString>
+            <IsIconStandardSize>true</IsIconStandardSize>
+            <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+            <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+            <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+            <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+            <FloatingTitleWidth>120</FloatingTitleWidth>
+            <FloatingTitleHeight>40</FloatingTitleHeight>
+          </VisualNodeSettings>
+          <OutliningStatus />
+          <IsBackwardsNode>false</IsBackwardsNode>
+          <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+        </TycheGuiNode>
+        <TycheGuiNode>
+          <Name>Operation 4</Name>
+          <ElementLeft>-674</ElementLeft>
+          <ElementTop>366</ElementTop>
+          <ElementWidth>250</ElementWidth>
+          <ElementHeight>90</ElementHeight>
+          <Children />
+          <VisualNodeSettings>
+            <ShowIcon>true</ShowIcon>
+            <ShowTitle>true</ShowTitle>
+            <ShowBorder>true</ShowBorder>
+            <ShowBackground>true</ShowBackground>
+            <IconString></IconString>
+            <TitleLocation>Embed</TitleLocation>
+            <TitleColourString>#FF000000</TitleColourString>
+            <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+            <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+            <BorderColourString>#FF800080</BorderColourString>
+            <IsIconStandardSize>true</IsIconStandardSize>
+            <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+            <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+            <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+            <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+            <FloatingTitleWidth>120</FloatingTitleWidth>
+            <FloatingTitleHeight>40</FloatingTitleHeight>
+          </VisualNodeSettings>
+          <OutliningStatus />
+          <IsBackwardsNode>false</IsBackwardsNode>
+          <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+        </TycheGuiNode>
+      </TopLevelGuiNodes>
+      <DebuggingSettings>
+        <BreakOnError>true</BreakOnError>
+        <BreakOnWarning>false</BreakOnWarning>
+        <BreakOnMessage>false</BreakOnMessage>
+      </DebuggingSettings>
+      <DefaultGridCellFormat i:nil="true" />
+      <ModelInspectionSettings viewGlobalProperties="True" viewDescriptionProperties="True" viewTSharpProperties="True" viewGeneralProperties="True" viewInputVariables="True" viewOutputVariables="True" viewNodesWithTSharp="True" viewNodesWithoutTSharp="True" />
+    </TycheModel>
+  </TycheProjectGUIContents>
+</TycheProject>

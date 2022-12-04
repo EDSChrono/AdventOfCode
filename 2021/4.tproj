@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TycheProject xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <TycheProjectFileVersion>2</TycheProjectFileVersion>
+  <TycheVersion>211.0.1.21203</TycheVersion>
+  <IsAuditingEnabled>false</IsAuditingEnabled>
+  <TycheProjectEngineContents>
+    <TycheEngine xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+      <FileVersion>1</FileVersion>
+      <LastLoadedEngineVersion>
+        <BuildNumber>0</BuildNumber>
+        <MajorVersionNumber>0</MajorVersionNumber>
+        <MinorVersionNumber>0</MinorVersionNumber>
+        <PatchNumber>0</PatchNumber>
+      </LastLoadedEngineVersion>
+      <Globals>
+        <ScenarioCount>10000</ScenarioCount>
+        <RandomSeed>749216459</RandomSeed>
+        <UsePerNodeSeeding>true</UsePerNodeSeeding>
+        <AutomaticClearResults>false</AutomaticClearResults>
+        <AutomaticFreeMemory>false</AutomaticFreeMemory>
+        <SparseVectorThreshold>0.01</SparseVectorThreshold>
+        <SIMDGlobalNumThreads>1</SIMDGlobalNumThreads>
+        <ModelDescription></ModelDescription>
+        <ManagedGlobalNumThreads>1</ManagedGlobalNumThreads>
+        <UseDependencyGroups>true</UseDependencyGroups>
+        <CheckIndexingVariables>false</CheckIndexingVariables>
+        <CheckVariablesAndTypes>false</CheckVariablesAndTypes>
+        <FatalReportLevel>Error</FatalReportLevel>
+        <IssueWarningForExperimentalFeatures>true</IssueWarningForExperimentalFeatures>
+        <CheckDimensionNames>None</CheckDimensionNames>
+        <CheckNonDistributedFunctions>None</CheckNonDistributedFunctions>
+        <ToolkitRequirements />
+        <ModelDeveloper></ModelDeveloper>
+        <ModelReviewer></ModelReviewer>
+        <ModelReviewDate></ModelReviewDate>
+        <ModelNextReviewDate></ModelNextReviewDate>
+      </Globals>
+      <TopLevelModelNodes>
+        <TycheNode xmlns="" i:type="TycheNodeOperation">
+          <fAttachedData i:nil="true" />
+          <NodeType>Operation</NodeType>
+          <Name>Operation</Name>
+          <Description></Description>
+          <Author>SmithEd</Author>
+          <Text>RawInput = FileRead("Input4.txt");
+
+#Region Parse Input
+//Sims are split by 2 return characters
+InputStoch = ToStochasticVariable(StringSplit(RawInput, Char(10) + Char(10)));
+
+//Numbers drawn is sim 0
+Draw = ToInteger(ToStochasticVariable(StringSplit(InputStoch&lt;&lt;0&gt;&gt; , ",")));
+
+//All other sims are bingo cards
+CardString = Where[sims](InputStoch, Indices(NumScenarios(InputStoch)) != 0);
+
+//Split cards into rows and columns
+Cards = ToInteger(ReIndex(StringSplit(StringSplit(CardString, Char(10)), " "), "Row", "Column")); 
+
+#EndRegion
+
+#Region Determine how many cards it would take for each card to win
+//Overwrite numbers on cards with their draw order
+DrawOntoCard[Cards] = MultiColumnIndexOf(Cards[Row, Column], Draw);
+
+//For each row and column determine at which draw number it will win
+WhenRowsColumnsWin[Direction][{"Row", "Column"}] = {Reindex(Max[Column, mind](DrawOntoCard), "Total"), Reindex(Max[Row, mind](DrawOntoCard), "Total")};
+
+//Card will win at the minimum of the winning draw of all of its rows and columns
+WhenCardWins = Min[sims](WhenRowsColumnsWin);
+
+#EndRegion
+
+#Region Build Answer
+//Shape to parallelise P1 and P2
+PartRequirement[Part][{"One", "Two"}] = Part == "One" ? Min(WhenCardWins) : Max(WhenCardWins);
+
+//Sim indices of all cards
+CardIndex = Indices(NumScenarios(Cards));
+
+//Identify winning and losing card sim
+WinningLosingCardSim[PartRequirement] = Where[sims](CardIndex, Contains[sims](WhenCardWins, PartRequirement[Part]));
+
+//Isolate winning and losing card
+WinningLosingCard[PartRequirement] = Cards&lt;&lt;WinningLosingCardSim[Part]&gt;&gt;;
+
+//Filter outstanding numbers and multiply by number drawn when card wins
+Answer[PartRequirement] = Sum(Where(WinningLosingCard[Part], DrawOntoCard&lt;&lt;WinningLosingCardSim[Part]&gt;&gt; &gt; PartRequirement[Part])) * Draw&lt;&lt;PartRequirement[Part]&gt;&gt;;
+
+#EndRegion</Text>
+          <CacheResultValues>true</CacheResultValues>
+          <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+          <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+          <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+          <NumScenariosDefault>0</NumScenariosDefault>
+          <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+          <Breakpoints />
+          <NestedSettings xmlns="" i:type="TycheSettingsContainer">
+            <InputVariables />
+            <OutputVariables />
+            <IsContainer>false</IsContainer>
+            <RandomSeed>1535424799</RandomSeed>
+          </NestedSettings>
+          <Children />
+          <ChildrenEdges />
+        </TycheNode>
+      </TopLevelModelNodes>
+      <TopLevelModelEdges />
+    </TycheEngine>
+  </TycheProjectEngineContents>
+  <TycheProjectGUIContents>
+    <TycheModel xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+      <FileVersion>1</FileVersion>
+      <TopLevelGuiNodes>
+        <TycheGuiNode>
+          <Name>Operation</Name>
+          <ElementLeft>469</ElementLeft>
+          <ElementTop>189</ElementTop>
+          <ElementWidth>250</ElementWidth>
+          <ElementHeight>90</ElementHeight>
+          <Children />
+          <VisualNodeSettings>
+            <ShowIcon>true</ShowIcon>
+            <ShowTitle>true</ShowTitle>
+            <ShowBorder>true</ShowBorder>
+            <ShowBackground>true</ShowBackground>
+            <IconString></IconString>
+            <TitleLocation>Embed</TitleLocation>
+            <TitleColourString>#FF000000</TitleColourString>
+            <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+            <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+            <BorderColourString>#FF800080</BorderColourString>
+            <IsIconStandardSize>true</IsIconStandardSize>
+            <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+            <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+            <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+            <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+            <FloatingTitleWidth>120</FloatingTitleWidth>
+            <FloatingTitleHeight>40</FloatingTitleHeight>
+          </VisualNodeSettings>
+          <OutliningStatus>
+            <TycheSyntaxRegionInfo>
+              <IsCollapsed>false</IsCollapsed>
+              <TextSnapshotRange>
+                <EndOffset>536</EndOffset>
+                <StartOffset>36</StartOffset>
+              </TextSnapshotRange>
+            </TycheSyntaxRegionInfo>
+            <TycheSyntaxRegionInfo>
+              <IsCollapsed>false</IsCollapsed>
+              <TextSnapshotRange>
+                <EndOffset>1087</EndOffset>
+                <StartOffset>538</StartOffset>
+              </TextSnapshotRange>
+            </TycheSyntaxRegionInfo>
+            <TycheSyntaxRegionInfo>
+              <IsCollapsed>false</IsCollapsed>
+              <TextSnapshotRange>
+                <EndOffset>1822</EndOffset>
+                <StartOffset>1089</StartOffset>
+              </TextSnapshotRange>
+            </TycheSyntaxRegionInfo>
+          </OutliningStatus>
+          <IsBackwardsNode>false</IsBackwardsNode>
+          <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+        </TycheGuiNode>
+      </TopLevelGuiNodes>
+      <DebuggingSettings>
+        <BreakOnError>true</BreakOnError>
+        <BreakOnWarning>false</BreakOnWarning>
+        <BreakOnMessage>false</BreakOnMessage>
+      </DebuggingSettings>
+      <DefaultGridCellFormat i:nil="true" />
+      <ModelInspectionSettings viewGlobalProperties="True" viewDescriptionProperties="True" viewTSharpProperties="True" viewGeneralProperties="True" viewInputVariables="True" viewOutputVariables="True" viewNodesWithTSharp="True" viewNodesWithoutTSharp="True" />
+    </TycheModel>
+  </TycheProjectGUIContents>
+</TycheProject>
