@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TycheProject xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
   <TycheProjectFileVersion>2</TycheProjectFileVersion>
-  <TycheVersion>211.0.4.21247</TycheVersion>
+  <TycheVersion>211.0.5.21284</TycheVersion>
   <IsAuditingEnabled>false</IsAuditingEnabled>
   <TycheProjectEngineContents>
     <TycheEngine xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
@@ -44,17 +44,25 @@
           <Author>esmithadm</Author>
           <Text>Input = ToInteger(FileReadLines("1.txt"));
 
+//Enter number of elves needed (p1 = 1, p2 = 3)
+TopCaloriesRequired = 3;
+
+//Identify the input groups
 IdElves = ToInteger(IsBlank(Input));
+AssignCaloriesToElves = ToString(Accumulate[sims](IdElves));
 
-X = ToString(Accumulate[sims](IdElves));
-Y[Elf][Distinct(X)] = Elf;
-Z[Y] = ToDeterministicVariable(Where[sims](Input, X == Elf));
+//Make distinct list of elves
+ElfShape[Elf][Distinct(AssignCaloriesToElves)] = Elf;
 
-ElfCalories = Sum[Elf](Z);
-P1 = Max(ElfCalories);
+//Group calories to elf
+GroupCaloriesByElf[ElfShape] = ToDeterministicVariable(Where[sims](Input, AssignCaloriesToElves == Elf));
+ElfCalories = Sum[Elf](GroupCaloriesByElf);
 
+//Sort calories (want biggest first therefore negative)
 RankElfCalories = SortOrder(-ElfCalories);
-P2 = Sum(ElfCalories[RankElfCalories[Indices(3)]]);</Text>
+
+//Sum top n (See TotalCalories Required)
+Answer = Sum(ElfCalories[RankElfCalories[Indices(TopCaloriesRequired)]]);</Text>
           <CacheResultValues>true</CacheResultValues>
           <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
           <NumScenariosSourceNodeName></NumScenariosSourceNodeName>

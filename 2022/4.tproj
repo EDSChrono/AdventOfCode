@@ -59,7 +59,7 @@ CountContainedWorkstreams = Sum(TestMatchingBounds);
 #EndRegion
 
 #Region Part 2
-//Work out non-intersecting workstreams
+//Work out non-intersecting workstreams, we want everything else
 NotNonIntersectingWorkstreams = ToInteger(!(CompareBoundsWithIntersection[1] -CompareBoundsWithIntersection[0] &lt; 0));
 
 //Count for answer
@@ -127,7 +127,7 @@ OverlappingWorkstreams = Sum(NotNonIntersectingWorkstreams);
             <TycheSyntaxRegionInfo>
               <IsCollapsed>false</IsCollapsed>
               <TextSnapshotRange>
-                <EndOffset>899</EndOffset>
+                <EndOffset>924</EndOffset>
                 <StartOffset>634</StartOffset>
               </TextSnapshotRange>
             </TycheSyntaxRegionInfo>
