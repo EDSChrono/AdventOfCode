@@ -27,5 +27,3 @@ print(scorer(input_list_split, options_op, options_me))
 #P2
 adj_input_list_split = selection_adj(input_list_split, options_op, options_me)
 print(scorer(adj_input_list_split, options_op, options_me))
-
-stop = timeit.default_timer()
