@@ -6,8 +6,9 @@ def score(c):
 def priority(string_list):
     result = 0
     for string in string_list:
-        string_length = len(string)
-        c_1,c_2 = string[:string_length//2], string[string_length//2:]
+        comp_length = len(string)/2
+        assert int(comp_length) == comp_length
+        c_1,c_2 = string[:comp_length], string[comp_length:]
         for char in c_1:
             if char in c_2:
                 result += score(char)
