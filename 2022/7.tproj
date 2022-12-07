@@ -1,0 +1,430 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TycheProject xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <TycheProjectFileVersion>2</TycheProjectFileVersion>
+  <TycheVersion>211.0.5.21284</TycheVersion>
+  <IsAuditingEnabled>false</IsAuditingEnabled>
+  <TycheProjectEngineContents>
+    <TycheEngine xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+      <FileVersion>1</FileVersion>
+      <LastLoadedEngineVersion>
+        <BuildNumber>0</BuildNumber>
+        <MajorVersionNumber>0</MajorVersionNumber>
+        <MinorVersionNumber>0</MinorVersionNumber>
+        <PatchNumber>0</PatchNumber>
+      </LastLoadedEngineVersion>
+      <Globals>
+        <ScenarioCount>10000</ScenarioCount>
+        <RandomSeed>749216459</RandomSeed>
+        <UsePerNodeSeeding>true</UsePerNodeSeeding>
+        <AutomaticClearResults>false</AutomaticClearResults>
+        <AutomaticFreeMemory>false</AutomaticFreeMemory>
+        <SparseVectorThreshold>0.01</SparseVectorThreshold>
+        <SIMDGlobalNumThreads>-1</SIMDGlobalNumThreads>
+        <ModelDescription></ModelDescription>
+        <ManagedGlobalNumThreads>-1</ManagedGlobalNumThreads>
+        <UseDependencyGroups>true</UseDependencyGroups>
+        <CheckIndexingVariables>false</CheckIndexingVariables>
+        <CheckVariablesAndTypes>false</CheckVariablesAndTypes>
+        <FatalReportLevel>Error</FatalReportLevel>
+        <IssueWarningForExperimentalFeatures>true</IssueWarningForExperimentalFeatures>
+        <CheckDimensionNames>None</CheckDimensionNames>
+        <CheckNonDistributedFunctions>None</CheckNonDistributedFunctions>
+        <ToolkitRequirements />
+        <ModelDeveloper></ModelDeveloper>
+        <ModelReviewer></ModelReviewer>
+        <ModelReviewDate></ModelReviewDate>
+        <ModelNextReviewDate></ModelNextReviewDate>
+      </Globals>
+      <TopLevelModelNodes>
+        <TycheNode xmlns="" i:type="TycheNodeLoop">
+          <fAttachedData i:nil="true" />
+          <NodeType>Loop</NodeType>
+          <Name>Loop</Name>
+          <Description></Description>
+          <Author>esmithadm</Author>
+          <Text>//Input file or overwrite with output from previous loop
+TerminalOutput = FileReadLines("7.txt");
+
+//List of directories
+DirectoryList = CurrentDirectory;
+
+//List of file size values
+ValueList = Blank;
+
+//Record where we are on the drive on each loop
+CurrentDirectory = StringReplace(TerminalOutput&lt;&lt;0&gt;&gt;, "$ cd ", "");
+
+//Remove current cd command
+RemainingTerminalOutputIndicesPreList = Indices(NumScenarios(TerminalOutput) - 1) + 1;
+NewTerminalOutputPreList = TerminalOutput&lt;&lt;RemainingTerminalOutputIndicesPreList&gt;&gt;;
+
+NextCDCommands = StringContains(NewTerminalOutputPreList, "$ cd ", True);
+NextCDCommandIndex = MultiColumnIndexOf(True, NextCDCommands);
+ExtractListForCurrentDir = 
+ if NextCDCommandIndex == -1 then NewTerminalOutputPreList
+ else NewTerminalOutputPreList&lt;&lt;if NextCDCommandIndex == 0 then 0 else Indices(NextCDCommandIndex - 1) + 1&gt;&gt;;
+
+NewDirectories = CurrentDirectory +
+//Case when list of new directories is empty
+ if StringContains(ExtractListForCurrentDir, "$ cd", True)
+ then ToString(Blank)
+//Case list element is another directory
+ else if StringContains(ExtractListForCurrentDir, "dir", True)
+ then StringSplit(ExtractListForCurrentDir," ")[1] + "/"
+//Case list element is a file
+ else StringSplit(ExtractListForCurrentDir," ")[1];
+
+//Recored file size if possible
+NewValues = ToInteger(StringSplit(NewDirectories, " ")[0], ToInteger(Blank));
+
+//Export complete directory and file size values list
+out NewDirectoryList = Glue[sims](DirectoryList, NewDirectories);
+out NewValuesList = Glue[sims](ValueList, NewValues);
+
+//Inputs for next loop
+NewTerminalOutput = 
+//Will be true on final loop
+ if NextCDCommandIndex == -1
+ then ToString(Blank)
+//Rebase the terminal output to the next cd command
+ else NewTerminalOutputPreList&lt;&lt;Indices(NumScenarios(NewTerminalOutputPreList) - NextCDCommandIndex) + NextCDCommandIndex&gt;&gt;;
+
+//Isolate the inner most directory for possible upwards move through drive
+InnerDirectory = StringSplit(CurrentDirectory, "/");
+InnerDirectoryStringLength = StringLength(InnerDirectory[Length(InnerDirectory) - 1, default::""]);
+
+NewCurrentDirectory =
+//Case when moving up the drive 
+ if StringContains(NewTerminalOutput&lt;&lt;0&gt;&gt;, "..", True)
+ then StringSubString(CurrentDirectory, 0, StringLength(CurrentDirectory) - InnerDirectoryStringLength - 1 )
+//Case when moving down the drive
+ else CurrentDirectory + StringSplit(NewTerminalOutput&lt;&lt;0&gt;&gt;, " ")[2] + "/";
+
+//Any more cds?
+Iterations = Sum(ToInteger(StringContains(TerminalOutput, "$ cd", True))) &gt; 1;</Text>
+          <CacheResultValues>true</CacheResultValues>
+          <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+          <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+          <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+          <NumScenariosDefault>0</NumScenariosDefault>
+          <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+          <Breakpoints />
+          <NestedSettings xmlns="" i:type="TycheSettingsLoop">
+            <InputVariables />
+            <OutputVariables />
+            <IsContainer>false</IsContainer>
+            <RandomSeed>1535424799</RandomSeed>
+            <StartVariables>
+              <TycheChildVariableReference>
+                <ChildNodeName></ChildNodeName>
+                <ChildVariableType>Local</ChildVariableType>
+                <ChildVariableName>TerminalOutput</ChildVariableName>
+              </TycheChildVariableReference>
+              <TycheChildVariableReference>
+                <ChildNodeName></ChildNodeName>
+                <ChildVariableType>Local</ChildVariableType>
+                <ChildVariableName>DirectoryList</ChildVariableName>
+              </TycheChildVariableReference>
+              <TycheChildVariableReference>
+                <ChildNodeName></ChildNodeName>
+                <ChildVariableType>Local</ChildVariableType>
+                <ChildVariableName>CurrentDirectory</ChildVariableName>
+              </TycheChildVariableReference>
+              <TycheChildVariableReference>
+                <ChildNodeName></ChildNodeName>
+                <ChildVariableType>Local</ChildVariableType>
+                <ChildVariableName>ValueList</ChildVariableName>
+              </TycheChildVariableReference>
+            </StartVariables>
+            <EndVariables>
+              <TycheChildVariableReference>
+                <ChildNodeName></ChildNodeName>
+                <ChildVariableType>Local</ChildVariableType>
+                <ChildVariableName>NewTerminalOutput</ChildVariableName>
+              </TycheChildVariableReference>
+              <TycheChildVariableReference>
+                <ChildNodeName></ChildNodeName>
+                <ChildVariableType>Local</ChildVariableType>
+                <ChildVariableName>NewDirectoryList</ChildVariableName>
+              </TycheChildVariableReference>
+              <TycheChildVariableReference>
+                <ChildNodeName></ChildNodeName>
+                <ChildVariableType>Local</ChildVariableType>
+                <ChildVariableName>NewCurrentDirectory</ChildVariableName>
+              </TycheChildVariableReference>
+              <TycheChildVariableReference>
+                <ChildNodeName></ChildNodeName>
+                <ChildVariableType>Local</ChildVariableType>
+                <ChildVariableName>NewValuesList</ChildVariableName>
+              </TycheChildVariableReference>
+            </EndVariables>
+            <HistoryVariables>
+              <TycheRenamedChildVariableReference>
+                <Name>DirectoryHistory</Name>
+                <ChildVariableReference>
+                  <ChildNodeName></ChildNodeName>
+                  <ChildVariableType>Local</ChildVariableType>
+                  <ChildVariableName>CurrentDirectory</ChildVariableName>
+                </ChildVariableReference>
+              </TycheRenamedChildVariableReference>
+            </HistoryVariables>
+            <LoopIterationsType>Indeterminate</LoopIterationsType>
+            <ContinuationVariable>
+              <ChildNodeName></ChildNodeName>
+              <ChildVariableType>Local</ChildVariableType>
+              <ChildVariableName>Iterations</ChildVariableName>
+            </ContinuationVariable>
+            <NumIterationsVariable>
+              <ChildNodeName></ChildNodeName>
+              <ChildVariableType>Local</ChildVariableType>
+              <ChildVariableName></ChildVariableName>
+            </NumIterationsVariable>
+          </NestedSettings>
+          <Children>
+            <TycheNode xmlns="" i:type="TycheNodeNestedInputs">
+              <fAttachedData i:nil="true" />
+              <NodeType>NestedInputs</NodeType>
+              <Name>Inputs</Name>
+              <Description></Description>
+              <Author>esmithadm</Author>
+              <Text></Text>
+              <CacheResultValues>true</CacheResultValues>
+              <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+              <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+              <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+              <NumScenariosDefault>0</NumScenariosDefault>
+              <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+              <Breakpoints />
+            </TycheNode>
+            <TycheNode xmlns="" i:type="TycheNodeNestedOutputs">
+              <fAttachedData i:nil="true" />
+              <NodeType>NestedOutputs</NodeType>
+              <Name>Outputs</Name>
+              <Description></Description>
+              <Author>esmithadm</Author>
+              <Text></Text>
+              <CacheResultValues>true</CacheResultValues>
+              <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+              <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+              <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+              <NumScenariosDefault>0</NumScenariosDefault>
+              <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+              <Breakpoints />
+            </TycheNode>
+          </Children>
+          <ChildrenEdges />
+        </TycheNode>
+        <TycheNode xmlns="" i:type="TycheNodeOperation">
+          <fAttachedData i:nil="true" />
+          <NodeType>Operation</NodeType>
+          <Name>Operation 2</Name>
+          <Description></Description>
+          <Author>esmithadm</Author>
+          <Text>arg DirectoryHistory = Loop.DirectoryHistory;
+arg NewDirectoryList = Loop.NewDirectoryList;
+arg NewValuesList = Loop.NewValuesList;
+
+#Region Part1
+//Calculate size of directories
+FileInDirectory[Directory][Distinct(DirectoryHistory)] = StringContains(NewDirectoryList, Directory, True);
+FileInDirectorySize = NewValuesList * ToInteger(FileInDirectory);
+DirectorySize = Sum[Directory, mbla](FileInDirectorySize);
+
+//Answer
+Part1 = Sum(Where(DirectorySize, DirectorySize &lt;= 100000));
+
+#EndRegion
+
+#Region Part2
+//Drive size and required space
+Space = 70000000;
+RequiredSpace = 30000000;
+
+//Calculate space needed to clear
+CurrentSpace = Space - FileInDirectorySize["/"];
+SpaceToFree = RequiredSpace - CurrentSpace;
+
+//Identify large enough directories
+DirectoriesDeletionEnough = FileInDirectorySize - SpaceToFree;
+CandidateDirectorySize = Where(FileInDirectorySize, DirectoriesDeletionEnough &gt; 0);
+
+Part2 = Min(CandidateDirectorySize);
+
+#EndRegion
+</Text>
+          <CacheResultValues>true</CacheResultValues>
+          <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+          <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+          <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+          <NumScenariosDefault>0</NumScenariosDefault>
+          <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+          <Breakpoints />
+          <NestedSettings xmlns="" i:type="TycheSettingsContainer">
+            <InputVariables />
+            <OutputVariables />
+            <IsContainer>false</IsContainer>
+            <RandomSeed>1058333815</RandomSeed>
+          </NestedSettings>
+          <Children />
+          <ChildrenEdges />
+        </TycheNode>
+      </TopLevelModelNodes>
+      <TopLevelModelEdges>
+        <TycheEdge>
+          <SourceNodeFullName>Loop</SourceNodeFullName>
+          <SinkNodeFullName>Operation 2</SinkNodeFullName>
+        </TycheEdge>
+      </TopLevelModelEdges>
+    </TycheEngine>
+  </TycheProjectEngineContents>
+  <TycheProjectGUIContents>
+    <TycheModel xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+      <FileVersion>1</FileVersion>
+      <TopLevelGuiNodes>
+        <TycheGuiNode>
+          <Name>Loop</Name>
+          <ElementLeft>454</ElementLeft>
+          <ElementTop>291</ElementTop>
+          <ElementWidth>250</ElementWidth>
+          <ElementHeight>90</ElementHeight>
+          <Children>
+            <TycheGuiNode>
+              <Name>Inputs</Name>
+              <ElementLeft>250</ElementLeft>
+              <ElementTop>90</ElementTop>
+              <ElementWidth>250</ElementWidth>
+              <ElementHeight>90</ElementHeight>
+              <Children />
+              <VisualNodeSettings>
+                <ShowIcon>true</ShowIcon>
+                <ShowTitle>true</ShowTitle>
+                <ShowBorder>true</ShowBorder>
+                <ShowBackground>true</ShowBackground>
+                <IconString></IconString>
+                <TitleLocation>Embed</TitleLocation>
+                <TitleColourString>#FF000000</TitleColourString>
+                <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+                <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+                <BorderColourString>#FF800080</BorderColourString>
+                <IsIconStandardSize>true</IsIconStandardSize>
+                <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+                <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+                <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+                <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+                <FloatingTitleWidth>120</FloatingTitleWidth>
+                <FloatingTitleHeight>40</FloatingTitleHeight>
+              </VisualNodeSettings>
+              <OutliningStatus />
+              <IsBackwardsNode>false</IsBackwardsNode>
+              <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+            </TycheGuiNode>
+            <TycheGuiNode>
+              <Name>Outputs</Name>
+              <ElementLeft>250</ElementLeft>
+              <ElementTop>540</ElementTop>
+              <ElementWidth>250</ElementWidth>
+              <ElementHeight>90</ElementHeight>
+              <Children />
+              <VisualNodeSettings>
+                <ShowIcon>true</ShowIcon>
+                <ShowTitle>true</ShowTitle>
+                <ShowBorder>true</ShowBorder>
+                <ShowBackground>true</ShowBackground>
+                <IconString></IconString>
+                <TitleLocation>Embed</TitleLocation>
+                <TitleColourString>#FF000000</TitleColourString>
+                <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+                <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+                <BorderColourString>#FF800080</BorderColourString>
+                <IsIconStandardSize>true</IsIconStandardSize>
+                <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+                <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+                <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+                <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+                <FloatingTitleWidth>120</FloatingTitleWidth>
+                <FloatingTitleHeight>40</FloatingTitleHeight>
+              </VisualNodeSettings>
+              <OutliningStatus />
+              <IsBackwardsNode>false</IsBackwardsNode>
+              <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+            </TycheGuiNode>
+          </Children>
+          <VisualNodeSettings>
+            <ShowIcon>true</ShowIcon>
+            <ShowTitle>true</ShowTitle>
+            <ShowBorder>true</ShowBorder>
+            <ShowBackground>true</ShowBackground>
+            <IconString></IconString>
+            <TitleLocation>Embed</TitleLocation>
+            <TitleColourString>#FF000000</TitleColourString>
+            <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+            <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+            <BorderColourString>#FF800080</BorderColourString>
+            <IsIconStandardSize>true</IsIconStandardSize>
+            <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+            <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+            <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+            <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+            <FloatingTitleWidth>120</FloatingTitleWidth>
+            <FloatingTitleHeight>40</FloatingTitleHeight>
+          </VisualNodeSettings>
+          <OutliningStatus />
+          <IsBackwardsNode>false</IsBackwardsNode>
+          <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+        </TycheGuiNode>
+        <TycheGuiNode>
+          <Name>Operation 2</Name>
+          <ElementLeft>481</ElementLeft>
+          <ElementTop>697</ElementTop>
+          <ElementWidth>250</ElementWidth>
+          <ElementHeight>90</ElementHeight>
+          <Children />
+          <VisualNodeSettings>
+            <ShowIcon>true</ShowIcon>
+            <ShowTitle>true</ShowTitle>
+            <ShowBorder>true</ShowBorder>
+            <ShowBackground>true</ShowBackground>
+            <IconString></IconString>
+            <TitleLocation>Embed</TitleLocation>
+            <TitleColourString>#FF000000</TitleColourString>
+            <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+            <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+            <BorderColourString>#FF800080</BorderColourString>
+            <IsIconStandardSize>true</IsIconStandardSize>
+            <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+            <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+            <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+            <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+            <FloatingTitleWidth>120</FloatingTitleWidth>
+            <FloatingTitleHeight>40</FloatingTitleHeight>
+          </VisualNodeSettings>
+          <OutliningStatus>
+            <TycheSyntaxRegionInfo>
+              <IsCollapsed>false</IsCollapsed>
+              <TextSnapshotRange>
+                <EndOffset>493</EndOffset>
+                <StartOffset>133</StartOffset>
+              </TextSnapshotRange>
+            </TycheSyntaxRegionInfo>
+            <TycheSyntaxRegionInfo>
+              <IsCollapsed>false</IsCollapsed>
+              <TextSnapshotRange>
+                <EndOffset>946</EndOffset>
+                <StartOffset>495</StartOffset>
+              </TextSnapshotRange>
+            </TycheSyntaxRegionInfo>
+          </OutliningStatus>
+          <IsBackwardsNode>false</IsBackwardsNode>
+          <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+        </TycheGuiNode>
+      </TopLevelGuiNodes>
+      <DebuggingSettings>
+        <BreakOnError>true</BreakOnError>
+        <BreakOnWarning>false</BreakOnWarning>
+        <BreakOnMessage>false</BreakOnMessage>
+      </DebuggingSettings>
+      <DefaultGridCellFormat i:nil="true" />
+      <ModelInspectionSettings viewGlobalProperties="True" viewDescriptionProperties="True" viewTSharpProperties="True" viewGeneralProperties="True" viewInputVariables="True" viewOutputVariables="True" viewNodesWithTSharp="True" viewNodesWithoutTSharp="True" />
+    </TycheModel>
+  </TycheProjectGUIContents>
+</TycheProject>
