@@ -21,7 +21,6 @@ def assign_pair_count(assign_pair_endpoints):
             count_nest += 1
     return count_nest, count_dist
 
-
 # import data
 lines = [line.strip() for line in open('2022/4.txt')]
 
