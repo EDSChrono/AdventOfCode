@@ -39,35 +39,21 @@
         <TycheNode xmlns="" i:type="TycheNodeOperation">
           <fAttachedData i:nil="true" />
           <NodeType>Operation</NodeType>
-          <Name>Operation</Name>
+          <Name>Input Trees</Name>
           <Description></Description>
           <Author>esmithadm</Author>
-          <Text>Input = FileRead("5.txt");
-SplitCratesInstructions = StringSplit(Input, Char(10) + Char(10));
+          <Text>//Input file
+TreeHeights = FileReadLines("8.txt");
 
-out IsPart1 = True;
+//Parse
+TreeHeights_Split[col][StringLength(TreeHeights)] = ToInteger(StringSubstring(TreeHeights, col, 1));
+TreeHeights_colIndex[TreeHeights_Split] = col;
+TreeHeights_rowIndex[TreeHeights_Split] = Indices(NumScenarios(TreeHeights_Split));
 
-//Build instructions
-InstructionsMap[Ins][{"Length", "From", "To"}] = {1,3,5};
-out InstructionsList =
- ToStochasticVariable(
- Transpose[1,0](
- ToInteger(
- StringSplit(StringSplit(SplitCratesInstructions[1], Char(10)), " ")[:,InstructionsMap]
- )
- )
- );
-out Iterations = NumScenarios(InstructionsList);
-
-//Parse Crate Input
-CratesByHeight = StringSplit(SplitCratesInstructions[0], Char(10));
-CleanCratesByHeight[Height][Length(CratesByHeight) - 1] = StringReplace(StringReplace(StringReplace(CratesByHeight[Height], "[", ""), "]", ""), "    ", "  ");
-
-NumberOfStacks = Indices(ToInteger((StringLength(CleanCratesByHeight[0]) + 1)/2));
-CrateStacksWithGaps = ToString[sims](StringSubstring(CleanCratesByHeight, 2 * NumberOfStacks, 1));
-
-out CrateStacks = StringReplace(StringReplace(StringReplace(StringReplace(CrateStacksWithGaps, "{", ""), "}", ""), " ", ""), ",", "");
-out StackIndex = Indices(NumScenarios(CrateStacks));</Text>
+//Build Stoch List
+TreeHeights_stacked = ToStochasticVariable(Group[0]({TreeHeights_Split, TreeHeights_colIndex, TreeHeights_rowIndex}));
+out TreeHeights_stackedReindexed = Reindex(Reindex(TreeHeights_stacked, {"h", "c", "r"}), "Att");
+</Text>
           <CacheResultValues>true</CacheResultValues>
           <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
           <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
@@ -84,85 +70,134 @@ out StackIndex = Indices(NumScenarios(CrateStacks));</Text>
           <Children />
           <ChildrenEdges />
         </TycheNode>
-        <TycheNode xmlns="" i:type="TycheNodeLoop">
+        <TycheNode xmlns="" i:type="TycheNodeParallel">
           <fAttachedData i:nil="true" />
-          <NodeType>Loop</NodeType>
-          <Name>Loop</Name>
+          <NodeType>Parallel</NodeType>
+          <Name>Parallel</Name>
           <Description></Description>
           <Author>esmithadm</Author>
-          <Text>arg IsPart1 = Operation.IsPart1;
-arg CrateStacks = Operation.CrateStacks;
-arg InstructionsList = Operation.InstructionsList;
-arg Iterations = Operation.Iterations;
-arg StackIndex = Operation.StackIndex;
+          <Text>argparallel Tree_test = 'Input Trees'.TreeHeights_stackedReindexed;
+arg TreeHeights_stackedReindexed = 'Input Trees'.TreeHeights_stackedReindexed;
 
-CurrentIterationId = 0;
-CurrentInstruction = InstructionsList&lt;&lt;CurrentIterationId&gt;&gt;;
+#Region North
+TreeHeight_north =
+Where[sims](
+ TreeHeights_stackedReindexed,
+ TreeHeights_stackedReindexed["r"] &lt; Tree_test["r"] AND TreeHeights_stackedReindexed["c"] == Tree_test["c"]);
+maxTreeHeight_North = Max[mbla](TreeHeight_north["h"]);
 
-ExtractString = StringInsert(CrateStacks&lt;&lt;CurrentInstruction["From"] - 1&gt;&gt;, CurrentInstruction["Length"], "&gt;");
-SplitString = StringSplit(ExtractString, "&gt;");
+Visible_north = maxTreeHeight_north &lt; Tree_test["h"];
 
-FlipMovingString[i][StringLength(SplitString[0])] = 
- if IsPart1 
-  then StringSubstring(SplitString[0], StringLength(SplitString[0]) - 1 - i, 1)
-  else StringSubstring(SplitString[0], i, 1);
+TreesBlocking_north = Where[sims](TreeHeight_north, TreeHeight_north["h"] &gt;= Tree_test["h"]);
 
-BuildFlippedString[FlipMovingString] = if i == 0 then FlipMovingString[i] else BuildFlippedString[i-1] + FlipMovingString[i];
+VisibleScore_north = 
+if Visible_north 
+then Tree_test["r"]
+else Min(Tree_test["r"] - TreesBlocking_north["r"]);
 
-out CrateStacksNew = 
- if StackIndex == &lt;&lt;CurrentInstruction["From"] - 1&gt;&gt; then SplitString[1, default::""]
- else if StackIndex == &lt;&lt;CurrentInstruction["To"] - 1&gt;&gt; then BuildFlippedString[StringLength(SplitString[0]) - 1] + CrateStacks
- else CrateStacks;
+#EndRegion
 
-NextIterationId = CurrentIterationId + 1;</Text>
+#Region South
+TreeHeight_south =
+Where[sims](
+ TreeHeights_stackedReindexed,
+ TreeHeights_stackedReindexed["r"] &gt; Tree_test["r"] AND TreeHeights_stackedReindexed["c"] == Tree_test["c"]);
+maxTreeHeight_south = Max[mbla](TreeHeight_south["h"]);
+
+Visible_south = maxTreeHeight_south &lt; Tree_test["h"];
+
+TreesBlocking_south = Where[sims](TreeHeight_south, TreeHeight_south["h"] &gt;= Tree_test["h"]);
+
+VisibleScore_south = 
+if Visible_south 
+then Max(TreeHeights_stackedReindexed["r"]) - Tree_test["r"]
+else Min(TreesBlocking_south["r"] - Tree_test["r"]);
+
+#EndRegion
+
+#Region East
+TreeHeight_east =
+Where[sims](
+ TreeHeights_stackedReindexed,
+ TreeHeights_stackedReindexed["r"] == Tree_test["r"] AND TreeHeights_stackedReindexed["c"] &gt;Tree_test["c"]);
+maxTreeHeight_east = Max[mbla](TreeHeight_east["h"]);
+
+Visible_east = maxTreeHeight_east &lt; Tree_test["h"];
+
+TreesBlocking_east = Where[sims](TreeHeight_east, TreeHeight_east["h"] &gt;= Tree_test["h"]);
+
+VisibleScore_east = 
+if Visible_east 
+then Max(TreeHeights_stackedReindexed["c"]) - Tree_test["c"]
+else Min(TreesBlocking_east["c"] - Tree_test["c"]);
+
+#EndRegion
+
+#Region West
+TreeHeight_west =
+Where[sims](
+ TreeHeights_stackedReindexed,
+ TreeHeights_stackedReindexed["r"] == Tree_test["r"] AND TreeHeights_stackedReindexed["c"] &lt;Tree_test["c"]);
+maxTreeHeight_west = Max[mbla](TreeHeight_west["h"]);
+
+Visible_west = maxTreeHeight_west &lt; Tree_test["h"];
+
+TreesBlocking_west = Where[sims](TreeHeight_west, TreeHeight_west["h"] &gt;= Tree_test["h"]);
+
+VisibleScore_west = 
+if Visible_west 
+then Tree_test["c"]
+else Min(Tree_test["c"] - TreesBlocking_west["c"]);
+
+#EndRegion
+
+out Visible = Any(Visible_north, Visible_south, Visible_east, Visible_west);
+out ScenicScore = Product({VisibleScore_north, VisibleScore_south, VisibleScore_east, VisibleScore_west});
+
+Break = 0;
+</Text>
           <CacheResultValues>true</CacheResultValues>
           <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
           <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
           <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
           <NumScenariosDefault>0</NumScenariosDefault>
           <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
-          <Breakpoints />
-          <NestedSettings xmlns="" i:type="TycheSettingsLoop">
+          <Breakpoints>
+            <TycheBreakpoint>
+              <StatementIndex>24</StatementIndex>
+              <LineIndex>78</LineIndex>
+              <IsActive>true</IsActive>
+              <Condition></Condition>
+              <DelayCount>0</DelayCount>
+            </TycheBreakpoint>
+          </Breakpoints>
+          <NestedSettings xmlns="" i:type="TycheSettingsParallel">
             <InputVariables />
             <OutputVariables />
             <IsContainer>false</IsContainer>
-            <RandomSeed>1535424799</RandomSeed>
-            <StartVariables>
-              <TycheChildVariableReference>
-                <ChildNodeName></ChildNodeName>
-                <ChildVariableType>Local</ChildVariableType>
-                <ChildVariableName>CrateStacks</ChildVariableName>
-              </TycheChildVariableReference>
-              <TycheChildVariableReference>
-                <ChildNodeName></ChildNodeName>
-                <ChildVariableType>Local</ChildVariableType>
-                <ChildVariableName>CurrentIterationId</ChildVariableName>
-              </TycheChildVariableReference>
-            </StartVariables>
-            <EndVariables>
-              <TycheChildVariableReference>
-                <ChildNodeName></ChildNodeName>
-                <ChildVariableType>Local</ChildVariableType>
-                <ChildVariableName>CrateStacksNew</ChildVariableName>
-              </TycheChildVariableReference>
-              <TycheChildVariableReference>
-                <ChildNodeName></ChildNodeName>
-                <ChildVariableType>Local</ChildVariableType>
-                <ChildVariableName>NextIterationId</ChildVariableName>
-              </TycheChildVariableReference>
-            </EndVariables>
-            <HistoryVariables />
-            <LoopIterationsType>Fixed</LoopIterationsType>
-            <ContinuationVariable>
-              <ChildNodeName></ChildNodeName>
-              <ChildVariableType>Local</ChildVariableType>
-              <ChildVariableName></ChildVariableName>
-            </ContinuationVariable>
-            <NumIterationsVariable>
-              <ChildNodeName></ChildNodeName>
-              <ChildVariableType>Local</ChildVariableType>
-              <ChildVariableName>Iterations</ChildVariableName>
-            </NumIterationsVariable>
+            <RandomSeed>1883692604</RandomSeed>
+            <ParalleliseBy>Scenarios</ParalleliseBy>
+            <ParallelisationMethod>Threads</ParallelisationMethod>
+            <LocalScenarioCount>0</LocalScenarioCount>
+            <NumThreads>16</NumThreads>
+            <NumberOfSimChunks>1</NumberOfSimChunks>
+            <AutomaticallyGlueSimChunks>false</AutomaticallyGlueSimChunks>
+            <FreeChunkAllocationsAfterExecution>false</FreeChunkAllocationsAfterExecution>
+            <Grid>
+              <GridTransferType>ByRequest</GridTransferType>
+              <HostName>localhost</HostName>
+              <MaximumGridRequests>100</MaximumGridRequests>
+              <NodesJobTemplate></NodesJobTemplate>
+              <PortRangeHighest>7460</PortRangeHighest>
+              <PortRangeLowest>7443</PortRangeLowest>
+              <Priority>
+                <Value>2000</Value>
+              </Priority>
+              <RuntimeDirectory i:nil="true" />
+              <UseGridEmulation>false</UseGridEmulation>
+              <GridSettingsOrigin>FromParent</GridSettingsOrigin>
+            </Grid>
+            <ReseedEachExecution>true</ReseedEachExecution>
           </NestedSettings>
           <Children>
             <TycheNode xmlns="" i:type="TycheNodeNestedInputs">
@@ -201,12 +236,14 @@ NextIterationId = CurrentIterationId + 1;</Text>
         <TycheNode xmlns="" i:type="TycheNodeOperation">
           <fAttachedData i:nil="true" />
           <NodeType>Operation</NodeType>
-          <Name>Operation 2</Name>
+          <Name>Output</Name>
           <Description></Description>
           <Author>esmithadm</Author>
-          <Text>arg CrateStacksNew = Loop.CrateStacksNew;
+          <Text>arg ScenicScore = Parallel.ScenicScore;
+arg Visible = Parallel.Visible;
 
-Result = StringSubstring(CrateStacksNew,0,1)
+Visible_count = Sum(ToInteger(Visible));
+Max_ScenicScore = Max(ScenicScore);
 </Text>
           <CacheResultValues>true</CacheResultValues>
           <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
@@ -219,7 +256,7 @@ Result = StringSubstring(CrateStacksNew,0,1)
             <InputVariables />
             <OutputVariables />
             <IsContainer>false</IsContainer>
-            <RandomSeed>1058333815</RandomSeed>
+            <RandomSeed>949399457</RandomSeed>
           </NestedSettings>
           <Children />
           <ChildrenEdges />
@@ -227,12 +264,12 @@ Result = StringSubstring(CrateStacksNew,0,1)
       </TopLevelModelNodes>
       <TopLevelModelEdges>
         <TycheEdge>
-          <SourceNodeFullName>Operation</SourceNodeFullName>
-          <SinkNodeFullName>Loop</SinkNodeFullName>
+          <SourceNodeFullName>Input Trees</SourceNodeFullName>
+          <SinkNodeFullName>Parallel</SinkNodeFullName>
         </TycheEdge>
         <TycheEdge>
-          <SourceNodeFullName>Loop</SourceNodeFullName>
-          <SinkNodeFullName>Operation 2</SinkNodeFullName>
+          <SourceNodeFullName>Parallel</SourceNodeFullName>
+          <SinkNodeFullName>Output</SinkNodeFullName>
         </TycheEdge>
       </TopLevelModelEdges>
     </TycheEngine>
@@ -242,9 +279,9 @@ Result = StringSubstring(CrateStacksNew,0,1)
       <FileVersion>1</FileVersion>
       <TopLevelGuiNodes>
         <TycheGuiNode>
-          <Name>Operation</Name>
-          <ElementLeft>79</ElementLeft>
-          <ElementTop>17</ElementTop>
+          <Name>Input Trees</Name>
+          <ElementLeft>150</ElementLeft>
+          <ElementTop>250</ElementTop>
           <ElementWidth>250</ElementWidth>
           <ElementHeight>90</ElementHeight>
           <Children />
@@ -272,9 +309,9 @@ Result = StringSubstring(CrateStacksNew,0,1)
           <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
         </TycheGuiNode>
         <TycheGuiNode>
-          <Name>Loop</Name>
-          <ElementLeft>79</ElementLeft>
-          <ElementTop>158</ElementTop>
+          <Name>Parallel</Name>
+          <ElementLeft>153</ElementLeft>
+          <ElementTop>450</ElementTop>
           <ElementWidth>250</ElementWidth>
           <ElementHeight>90</ElementHeight>
           <Children>
@@ -358,14 +395,43 @@ Result = StringSubstring(CrateStacksNew,0,1)
             <FloatingTitleWidth>120</FloatingTitleWidth>
             <FloatingTitleHeight>40</FloatingTitleHeight>
           </VisualNodeSettings>
-          <OutliningStatus />
+          <OutliningStatus>
+            <TycheSyntaxRegionInfo>
+              <IsCollapsed>false</IsCollapsed>
+              <TextSnapshotRange>
+                <EndOffset>666</EndOffset>
+                <StartOffset>148</StartOffset>
+              </TextSnapshotRange>
+            </TycheSyntaxRegionInfo>
+            <TycheSyntaxRegionInfo>
+              <IsCollapsed>false</IsCollapsed>
+              <TextSnapshotRange>
+                <EndOffset>1227</EndOffset>
+                <StartOffset>668</StartOffset>
+              </TextSnapshotRange>
+            </TycheSyntaxRegionInfo>
+            <TycheSyntaxRegionInfo>
+              <IsCollapsed>false</IsCollapsed>
+              <TextSnapshotRange>
+                <EndOffset>1775</EndOffset>
+                <StartOffset>1229</StartOffset>
+              </TextSnapshotRange>
+            </TycheSyntaxRegionInfo>
+            <TycheSyntaxRegionInfo>
+              <IsCollapsed>false</IsCollapsed>
+              <TextSnapshotRange>
+                <EndOffset>2282</EndOffset>
+                <StartOffset>1777</StartOffset>
+              </TextSnapshotRange>
+            </TycheSyntaxRegionInfo>
+          </OutliningStatus>
           <IsBackwardsNode>false</IsBackwardsNode>
           <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
         </TycheGuiNode>
         <TycheGuiNode>
-          <Name>Operation 2</Name>
-          <ElementLeft>78</ElementLeft>
-          <ElementTop>297</ElementTop>
+          <Name>Output</Name>
+          <ElementLeft>156</ElementLeft>
+          <ElementTop>683</ElementTop>
           <ElementWidth>250</ElementWidth>
           <ElementHeight>90</ElementHeight>
           <Children />
