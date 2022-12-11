@@ -1,0 +1,692 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TycheProject xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <TycheProjectFileVersion>2</TycheProjectFileVersion>
+  <TycheVersion>211.0.5.21284</TycheVersion>
+  <IsAuditingEnabled>false</IsAuditingEnabled>
+  <TycheProjectEngineContents>
+    <TycheEngine xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+      <FileVersion>1</FileVersion>
+      <LastLoadedEngineVersion>
+        <BuildNumber>0</BuildNumber>
+        <MajorVersionNumber>0</MajorVersionNumber>
+        <MinorVersionNumber>0</MinorVersionNumber>
+        <PatchNumber>0</PatchNumber>
+      </LastLoadedEngineVersion>
+      <Globals>
+        <ScenarioCount>10000</ScenarioCount>
+        <RandomSeed>749216459</RandomSeed>
+        <UsePerNodeSeeding>true</UsePerNodeSeeding>
+        <AutomaticClearResults>false</AutomaticClearResults>
+        <AutomaticFreeMemory>false</AutomaticFreeMemory>
+        <SparseVectorThreshold>0.01</SparseVectorThreshold>
+        <SIMDGlobalNumThreads>-1</SIMDGlobalNumThreads>
+        <ModelDescription></ModelDescription>
+        <ManagedGlobalNumThreads>-1</ManagedGlobalNumThreads>
+        <UseDependencyGroups>true</UseDependencyGroups>
+        <CheckIndexingVariables>false</CheckIndexingVariables>
+        <CheckVariablesAndTypes>false</CheckVariablesAndTypes>
+        <FatalReportLevel>Error</FatalReportLevel>
+        <IssueWarningForExperimentalFeatures>true</IssueWarningForExperimentalFeatures>
+        <CheckDimensionNames>None</CheckDimensionNames>
+        <CheckNonDistributedFunctions>None</CheckNonDistributedFunctions>
+        <ToolkitRequirements />
+        <ModelDeveloper></ModelDeveloper>
+        <ModelReviewer></ModelReviewer>
+        <ModelReviewDate></ModelReviewDate>
+        <ModelNextReviewDate></ModelNextReviewDate>
+      </Globals>
+      <TopLevelModelNodes>
+        <TycheNode xmlns="" i:type="TycheNodeOperation">
+          <fAttachedData i:nil="true" />
+          <NodeType>Operation</NodeType>
+          <Name>Operation</Name>
+          <Description></Description>
+          <Author>esmithadm</Author>
+          <Text>//Import
+Input = Reindex(StringTrim(StringSplit(StringSplit(FileRead("../11.txt"), Char(10) + Char(10)), Char(10))), "Monkey");
+
+InputArguments = StringSplit(Input, ": ")[:,:,1];
+
+//Build Current Items
+CurrentItems = Reindex(ToInteger(StringSplit(InputArguments[:,0], ", ")), "Monkey", "i");
+
+//Build Worry Multiplier
+WorryUpdateAmount = ToInteger(StringSplit(InputArguments[:,1], " ")[:,4], ToInteger(Blank));
+WorryOperation = StringSplit(InputArguments[:,1], " ")[:,3];
+
+//Build Test Divisor
+TestDivisor = ToInteger(StringSplit(InputArguments[:,2], " ")[:,2]);
+
+//Monkey if True
+NextMonkey_True = ToInteger(StringSplit(InputArguments[:,3], "throw to monkey ")[:,0]);
+
+//Monkey if False
+NextMonkey_False = ToInteger(StringSplit(InputArguments[:,4], "throw to monkey ")[:,0]);
+
+out MonkeyManifest = @{
+ci = CurrentItems,
+wua = WorryUpdateAmount,
+wo = WorryOperation,
+td = TestDivisor,
+nm_true = NextMonkey_True,
+nm_false = NextMonkey_False,
+tp = Product(TestDivisor)
+};
+
+out NumberOfMonkeys = Length(Input);
+out Rounds = 10000;
+out InspectionCounter[Monkey][NumberOfMonkeys] = 0;
+out EmptyItemList[InspectionCounter] = Reindex({}, "i");
+out MonkeyShape[InspectionCounter] = Monkey;</Text>
+          <CacheResultValues>true</CacheResultValues>
+          <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+          <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+          <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+          <NumScenariosDefault>0</NumScenariosDefault>
+          <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+          <Breakpoints />
+          <NestedSettings xmlns="" i:type="TycheSettingsContainer">
+            <InputVariables />
+            <OutputVariables />
+            <IsContainer>false</IsContainer>
+            <RandomSeed>1535424799</RandomSeed>
+          </NestedSettings>
+          <Children />
+          <ChildrenEdges />
+        </TycheNode>
+        <TycheNode xmlns="" i:type="TycheNodeLoop">
+          <fAttachedData i:nil="true" />
+          <NodeType>Loop</NodeType>
+          <Name>Loop Rounds</Name>
+          <Description></Description>
+          <Author>esmithadm</Author>
+          <Text></Text>
+          <CacheResultValues>true</CacheResultValues>
+          <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+          <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+          <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+          <NumScenariosDefault>0</NumScenariosDefault>
+          <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+          <Breakpoints />
+          <NestedSettings xmlns="" i:type="TycheSettingsLoop">
+            <InputVariables>
+              <TycheInputVariable>
+                <VariableName>Rounds</VariableName>
+                <AncestorNodeName>Operation</AncestorNodeName>
+                <AncestorVariableName>Rounds</AncestorVariableName>
+                <IsParallel>false</IsParallel>
+                <IsBranchSelector>false</IsBranchSelector>
+              </TycheInputVariable>
+              <TycheInputVariable>
+                <VariableName>MonkeyManifest</VariableName>
+                <AncestorNodeName>Operation</AncestorNodeName>
+                <AncestorVariableName>MonkeyManifest</AncestorVariableName>
+                <IsParallel>false</IsParallel>
+                <IsBranchSelector>false</IsBranchSelector>
+              </TycheInputVariable>
+              <TycheInputVariable>
+                <VariableName>NumberOfMonkeys</VariableName>
+                <AncestorNodeName>Operation</AncestorNodeName>
+                <AncestorVariableName>NumberOfMonkeys</AncestorVariableName>
+                <IsParallel>false</IsParallel>
+                <IsBranchSelector>false</IsBranchSelector>
+              </TycheInputVariable>
+              <TycheInputVariable>
+                <VariableName>InspectionCounter</VariableName>
+                <AncestorNodeName>Operation</AncestorNodeName>
+                <AncestorVariableName>InspectionCounter</AncestorVariableName>
+                <IsParallel>false</IsParallel>
+                <IsBranchSelector>false</IsBranchSelector>
+              </TycheInputVariable>
+              <TycheInputVariable>
+                <VariableName>EmptyItemList</VariableName>
+                <AncestorNodeName>Operation</AncestorNodeName>
+                <AncestorVariableName>EmptyItemList</AncestorVariableName>
+                <IsParallel>false</IsParallel>
+                <IsBranchSelector>false</IsBranchSelector>
+              </TycheInputVariable>
+              <TycheInputVariable>
+                <VariableName>MonkeyShape</VariableName>
+                <AncestorNodeName>Operation</AncestorNodeName>
+                <AncestorVariableName>MonkeyShape</AncestorVariableName>
+                <IsParallel>false</IsParallel>
+                <IsBranchSelector>false</IsBranchSelector>
+              </TycheInputVariable>
+            </InputVariables>
+            <OutputVariables>
+              <TycheOutputVariable>
+                <VariableName>NewMonkeyManifest</VariableName>
+                <ChildNodeName>Loop Monkeys</ChildNodeName>
+                <ChildVariableName>NewMonkeyManifest</ChildVariableName>
+                <CachedTypeData i:nil="true" />
+                <IsEnabled>true</IsEnabled>
+              </TycheOutputVariable>
+              <TycheOutputVariable>
+                <VariableName>NewInspectionCounter</VariableName>
+                <ChildNodeName>Loop Monkeys</ChildNodeName>
+                <ChildVariableName>NewInspectionCounter</ChildVariableName>
+                <CachedTypeData i:nil="true" />
+                <IsEnabled>true</IsEnabled>
+              </TycheOutputVariable>
+            </OutputVariables>
+            <IsContainer>true</IsContainer>
+            <RandomSeed>1883692604</RandomSeed>
+            <StartVariables>
+              <TycheChildVariableReference>
+                <ChildNodeName>Inputs</ChildNodeName>
+                <ChildVariableType>Local</ChildVariableType>
+                <ChildVariableName>MonkeyManifest</ChildVariableName>
+              </TycheChildVariableReference>
+              <TycheChildVariableReference>
+                <ChildNodeName>Inputs</ChildNodeName>
+                <ChildVariableType>Local</ChildVariableType>
+                <ChildVariableName>InspectionCounter</ChildVariableName>
+              </TycheChildVariableReference>
+            </StartVariables>
+            <EndVariables>
+              <TycheChildVariableReference>
+                <ChildNodeName>Loop Monkeys</ChildNodeName>
+                <ChildVariableType>Local</ChildVariableType>
+                <ChildVariableName>NewMonkeyManifest</ChildVariableName>
+              </TycheChildVariableReference>
+              <TycheChildVariableReference>
+                <ChildNodeName>Loop Monkeys</ChildNodeName>
+                <ChildVariableType>Local</ChildVariableType>
+                <ChildVariableName>NewInspectionCounter</ChildVariableName>
+              </TycheChildVariableReference>
+            </EndVariables>
+            <HistoryVariables />
+            <LoopIterationsType>Fixed</LoopIterationsType>
+            <ContinuationVariable>
+              <ChildNodeName></ChildNodeName>
+              <ChildVariableType>Output</ChildVariableType>
+              <ChildVariableName></ChildVariableName>
+            </ContinuationVariable>
+            <NumIterationsVariable>
+              <ChildNodeName>Inputs</ChildNodeName>
+              <ChildVariableType>Output</ChildVariableType>
+              <ChildVariableName>Rounds</ChildVariableName>
+            </NumIterationsVariable>
+          </NestedSettings>
+          <Children>
+            <TycheNode xmlns="" i:type="TycheNodeNestedInputs">
+              <fAttachedData i:nil="true" />
+              <NodeType>NestedInputs</NodeType>
+              <Name>Inputs</Name>
+              <Description></Description>
+              <Author>esmithadm</Author>
+              <Text></Text>
+              <CacheResultValues>true</CacheResultValues>
+              <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+              <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+              <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+              <NumScenariosDefault>0</NumScenariosDefault>
+              <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+              <Breakpoints />
+            </TycheNode>
+            <TycheNode xmlns="" i:type="TycheNodeNestedOutputs">
+              <fAttachedData i:nil="true" />
+              <NodeType>NestedOutputs</NodeType>
+              <Name>Outputs</Name>
+              <Description></Description>
+              <Author>esmithadm</Author>
+              <Text></Text>
+              <CacheResultValues>true</CacheResultValues>
+              <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+              <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+              <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+              <NumScenariosDefault>0</NumScenariosDefault>
+              <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+              <Breakpoints />
+            </TycheNode>
+            <TycheNode xmlns="" i:type="TycheNodeLoop">
+              <fAttachedData i:nil="true" />
+              <NodeType>Loop</NodeType>
+              <Name>Loop Monkeys</Name>
+              <Description></Description>
+              <Author>esmithadm</Author>
+              <Text>arg MonkeyShape = Inputs.MonkeyShape;
+arg EmptyItemList = Inputs.EmptyItemList;
+arg InspectionCounter = Inputs.InspectionCounter;
+arg NumberOfMonkeys = Inputs.NumberOfMonkeys;
+arg MonkeyManifest = Inputs.MonkeyManifest;
+MonkeyIndex = 0;
+
+//Inspect
+IncreaseWorry = 
+if MonkeyManifest.wo[MonkeyIndex] == "*" then
+MonkeyManifest.ci[MonkeyIndex] *
+(IsBlank(MonkeyManifest.wua[MonkeyIndex]) ?
+ MonkeyManifest.ci[MonkeyIndex]:
+ MonkeyManifest.wua[MonkeyIndex])
+else
+MonkeyManifest.ci[MonkeyIndex] +
+(IsBlank(MonkeyManifest.wua[MonkeyIndex]) ?
+ MonkeyManifest.ci[MonkeyIndex]:
+ MonkeyManifest.wua[MonkeyIndex]);
+GetBored = IncreaseWorry mod MonkeyManifest.tp;
+
+//Test
+TestWorry = GetBored mod MonkeyManifest.td[MonkeyIndex] == 0;
+
+//Assign To New Monkey
+NewMonkey = TestWorry ? MonkeyManifest.nm_true[MonkeyIndex] : MonkeyManifest.nm_false[MonkeyIndex];
+AssignNewMonkey = Group[InspectionCounter, NewMonkey](GetBored);
+RemoveOldMonkey = 
+ MonkeyShape == MonkeyIndex ?
+ EmptyItemList :
+ MonkeyManifest.ci;
+NewCurrentItems = Glue[i](RemoveOldMonkey, AssignNewMonkey);
+
+//Build new loop variables
+out NewInspectionCounter = 
+ MonkeyShape == MonkeyIndex ?
+ InspectionCounter + Length(IncreaseWorry) : 
+ InspectionCounter;
+NextMonkeyIndex = MonkeyIndex + 1;
+out NewMonkeyManifest = @{
+ MonkeyManifest with ci = NewCurrentItems
+};</Text>
+              <CacheResultValues>true</CacheResultValues>
+              <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+              <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+              <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+              <NumScenariosDefault>0</NumScenariosDefault>
+              <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+              <Breakpoints />
+              <NestedSettings xmlns="" i:type="TycheSettingsLoop">
+                <InputVariables />
+                <OutputVariables />
+                <IsContainer>false</IsContainer>
+                <RandomSeed>1058333815</RandomSeed>
+                <StartVariables>
+                  <TycheChildVariableReference>
+                    <ChildNodeName></ChildNodeName>
+                    <ChildVariableType>Local</ChildVariableType>
+                    <ChildVariableName>MonkeyIndex</ChildVariableName>
+                  </TycheChildVariableReference>
+                  <TycheChildVariableReference>
+                    <ChildNodeName></ChildNodeName>
+                    <ChildVariableType>Local</ChildVariableType>
+                    <ChildVariableName>MonkeyManifest</ChildVariableName>
+                  </TycheChildVariableReference>
+                  <TycheChildVariableReference>
+                    <ChildNodeName></ChildNodeName>
+                    <ChildVariableType>Local</ChildVariableType>
+                    <ChildVariableName>InspectionCounter</ChildVariableName>
+                  </TycheChildVariableReference>
+                </StartVariables>
+                <EndVariables>
+                  <TycheChildVariableReference>
+                    <ChildNodeName></ChildNodeName>
+                    <ChildVariableType>Local</ChildVariableType>
+                    <ChildVariableName>NextMonkeyIndex</ChildVariableName>
+                  </TycheChildVariableReference>
+                  <TycheChildVariableReference>
+                    <ChildNodeName></ChildNodeName>
+                    <ChildVariableType>Local</ChildVariableType>
+                    <ChildVariableName>NewMonkeyManifest</ChildVariableName>
+                  </TycheChildVariableReference>
+                  <TycheChildVariableReference>
+                    <ChildNodeName></ChildNodeName>
+                    <ChildVariableType>Local</ChildVariableType>
+                    <ChildVariableName>NewInspectionCounter</ChildVariableName>
+                  </TycheChildVariableReference>
+                </EndVariables>
+                <HistoryVariables />
+                <LoopIterationsType>Fixed</LoopIterationsType>
+                <ContinuationVariable>
+                  <ChildNodeName></ChildNodeName>
+                  <ChildVariableType>Local</ChildVariableType>
+                  <ChildVariableName></ChildVariableName>
+                </ContinuationVariable>
+                <NumIterationsVariable>
+                  <ChildNodeName></ChildNodeName>
+                  <ChildVariableType>Argument</ChildVariableType>
+                  <ChildVariableName>NumberOfMonkeys</ChildVariableName>
+                </NumIterationsVariable>
+              </NestedSettings>
+              <Children>
+                <TycheNode xmlns="" i:type="TycheNodeNestedInputs">
+                  <fAttachedData i:nil="true" />
+                  <NodeType>NestedInputs</NodeType>
+                  <Name>Inputs</Name>
+                  <Description></Description>
+                  <Author>esmithadm</Author>
+                  <Text></Text>
+                  <CacheResultValues>true</CacheResultValues>
+                  <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+                  <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+                  <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+                  <NumScenariosDefault>0</NumScenariosDefault>
+                  <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+                  <Breakpoints />
+                </TycheNode>
+                <TycheNode xmlns="" i:type="TycheNodeNestedOutputs">
+                  <fAttachedData i:nil="true" />
+                  <NodeType>NestedOutputs</NodeType>
+                  <Name>Outputs</Name>
+                  <Description></Description>
+                  <Author>esmithadm</Author>
+                  <Text></Text>
+                  <CacheResultValues>true</CacheResultValues>
+                  <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+                  <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+                  <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+                  <NumScenariosDefault>0</NumScenariosDefault>
+                  <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+                  <Breakpoints />
+                </TycheNode>
+              </Children>
+              <ChildrenEdges />
+            </TycheNode>
+          </Children>
+          <ChildrenEdges>
+            <TycheEdge>
+              <SourceNodeFullName>Loop Rounds\Inputs</SourceNodeFullName>
+              <SinkNodeFullName>Loop Rounds\Loop Monkeys</SinkNodeFullName>
+            </TycheEdge>
+            <TycheEdge>
+              <SourceNodeFullName>Loop Rounds\Loop Monkeys</SourceNodeFullName>
+              <SinkNodeFullName>Loop Rounds\Outputs</SinkNodeFullName>
+            </TycheEdge>
+          </ChildrenEdges>
+        </TycheNode>
+        <TycheNode xmlns="" i:type="TycheNodeOperation">
+          <fAttachedData i:nil="true" />
+          <NodeType>Operation</NodeType>
+          <Name>Operation 2</Name>
+          <Description></Description>
+          <Author>esmithadm</Author>
+          <Text>arg NewInspectionCounter = 'Loop Rounds'.NewInspectionCounter;
+arg NewMonkeyManifest = 'Loop Rounds'.NewMonkeyManifest;
+
+IdentifyActiveMonkeys = SortDecreasing(NewInspectionCounter);
+P1 = IdentifyActiveMonkeys[0] * IdentifyActiveMonkeys[1];
+</Text>
+          <CacheResultValues>true</CacheResultValues>
+          <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+          <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+          <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+          <NumScenariosDefault>0</NumScenariosDefault>
+          <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+          <Breakpoints />
+          <NestedSettings xmlns="" i:type="TycheSettingsContainer">
+            <InputVariables />
+            <OutputVariables />
+            <IsContainer>false</IsContainer>
+            <RandomSeed>450910029</RandomSeed>
+          </NestedSettings>
+          <Children />
+          <ChildrenEdges />
+        </TycheNode>
+      </TopLevelModelNodes>
+      <TopLevelModelEdges>
+        <TycheEdge>
+          <SourceNodeFullName>Operation</SourceNodeFullName>
+          <SinkNodeFullName>Loop Rounds</SinkNodeFullName>
+        </TycheEdge>
+        <TycheEdge>
+          <SourceNodeFullName>Loop Rounds</SourceNodeFullName>
+          <SinkNodeFullName>Operation 2</SinkNodeFullName>
+        </TycheEdge>
+      </TopLevelModelEdges>
+    </TycheEngine>
+  </TycheProjectEngineContents>
+  <TycheProjectGUIContents>
+    <TycheModel xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+      <FileVersion>1</FileVersion>
+      <TopLevelGuiNodes>
+        <TycheGuiNode>
+          <Name>Operation</Name>
+          <ElementLeft>-644</ElementLeft>
+          <ElementTop>292</ElementTop>
+          <ElementWidth>250</ElementWidth>
+          <ElementHeight>90</ElementHeight>
+          <Children />
+          <VisualNodeSettings>
+            <ShowIcon>true</ShowIcon>
+            <ShowTitle>true</ShowTitle>
+            <ShowBorder>true</ShowBorder>
+            <ShowBackground>true</ShowBackground>
+            <IconString></IconString>
+            <TitleLocation>Embed</TitleLocation>
+            <TitleColourString>#FF000000</TitleColourString>
+            <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+            <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+            <BorderColourString>#FF800080</BorderColourString>
+            <IsIconStandardSize>true</IsIconStandardSize>
+            <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+            <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+            <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+            <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+            <FloatingTitleWidth>120</FloatingTitleWidth>
+            <FloatingTitleHeight>40</FloatingTitleHeight>
+          </VisualNodeSettings>
+          <OutliningStatus />
+          <IsBackwardsNode>false</IsBackwardsNode>
+          <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+        </TycheGuiNode>
+        <TycheGuiNode>
+          <Name>Loop Rounds</Name>
+          <ElementLeft>-647</ElementLeft>
+          <ElementTop>514</ElementTop>
+          <ElementWidth>250</ElementWidth>
+          <ElementHeight>90</ElementHeight>
+          <Children>
+            <TycheGuiNode>
+              <Name>Inputs</Name>
+              <ElementLeft>250</ElementLeft>
+              <ElementTop>90</ElementTop>
+              <ElementWidth>250</ElementWidth>
+              <ElementHeight>90</ElementHeight>
+              <Children />
+              <VisualNodeSettings>
+                <ShowIcon>true</ShowIcon>
+                <ShowTitle>true</ShowTitle>
+                <ShowBorder>true</ShowBorder>
+                <ShowBackground>true</ShowBackground>
+                <IconString></IconString>
+                <TitleLocation>Embed</TitleLocation>
+                <TitleColourString>#FF000000</TitleColourString>
+                <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+                <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+                <BorderColourString>#FF800080</BorderColourString>
+                <IsIconStandardSize>true</IsIconStandardSize>
+                <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+                <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+                <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+                <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+                <FloatingTitleWidth>120</FloatingTitleWidth>
+                <FloatingTitleHeight>40</FloatingTitleHeight>
+              </VisualNodeSettings>
+              <OutliningStatus />
+              <IsBackwardsNode>false</IsBackwardsNode>
+              <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+            </TycheGuiNode>
+            <TycheGuiNode>
+              <Name>Outputs</Name>
+              <ElementLeft>269</ElementLeft>
+              <ElementTop>613</ElementTop>
+              <ElementWidth>250</ElementWidth>
+              <ElementHeight>90</ElementHeight>
+              <Children />
+              <VisualNodeSettings>
+                <ShowIcon>true</ShowIcon>
+                <ShowTitle>true</ShowTitle>
+                <ShowBorder>true</ShowBorder>
+                <ShowBackground>true</ShowBackground>
+                <IconString></IconString>
+                <TitleLocation>Embed</TitleLocation>
+                <TitleColourString>#FF000000</TitleColourString>
+                <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+                <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+                <BorderColourString>#FF800080</BorderColourString>
+                <IsIconStandardSize>true</IsIconStandardSize>
+                <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+                <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+                <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+                <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+                <FloatingTitleWidth>120</FloatingTitleWidth>
+                <FloatingTitleHeight>40</FloatingTitleHeight>
+              </VisualNodeSettings>
+              <OutliningStatus />
+              <IsBackwardsNode>false</IsBackwardsNode>
+              <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+            </TycheGuiNode>
+            <TycheGuiNode>
+              <Name>Loop Monkeys</Name>
+              <ElementLeft>250</ElementLeft>
+              <ElementTop>321</ElementTop>
+              <ElementWidth>250</ElementWidth>
+              <ElementHeight>90</ElementHeight>
+              <Children>
+                <TycheGuiNode>
+                  <Name>Inputs</Name>
+                  <ElementLeft>250</ElementLeft>
+                  <ElementTop>90</ElementTop>
+                  <ElementWidth>250</ElementWidth>
+                  <ElementHeight>90</ElementHeight>
+                  <Children />
+                  <VisualNodeSettings>
+                    <ShowIcon>true</ShowIcon>
+                    <ShowTitle>true</ShowTitle>
+                    <ShowBorder>true</ShowBorder>
+                    <ShowBackground>true</ShowBackground>
+                    <IconString></IconString>
+                    <TitleLocation>Embed</TitleLocation>
+                    <TitleColourString>#FF000000</TitleColourString>
+                    <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+                    <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+                    <BorderColourString>#FF800080</BorderColourString>
+                    <IsIconStandardSize>true</IsIconStandardSize>
+                    <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+                    <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+                    <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+                    <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+                    <FloatingTitleWidth>120</FloatingTitleWidth>
+                    <FloatingTitleHeight>40</FloatingTitleHeight>
+                  </VisualNodeSettings>
+                  <OutliningStatus />
+                  <IsBackwardsNode>false</IsBackwardsNode>
+                  <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+                </TycheGuiNode>
+                <TycheGuiNode>
+                  <Name>Outputs</Name>
+                  <ElementLeft>250</ElementLeft>
+                  <ElementTop>540</ElementTop>
+                  <ElementWidth>250</ElementWidth>
+                  <ElementHeight>90</ElementHeight>
+                  <Children />
+                  <VisualNodeSettings>
+                    <ShowIcon>true</ShowIcon>
+                    <ShowTitle>true</ShowTitle>
+                    <ShowBorder>true</ShowBorder>
+                    <ShowBackground>true</ShowBackground>
+                    <IconString></IconString>
+                    <TitleLocation>Embed</TitleLocation>
+                    <TitleColourString>#FF000000</TitleColourString>
+                    <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+                    <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+                    <BorderColourString>#FF800080</BorderColourString>
+                    <IsIconStandardSize>true</IsIconStandardSize>
+                    <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+                    <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+                    <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+                    <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+                    <FloatingTitleWidth>120</FloatingTitleWidth>
+                    <FloatingTitleHeight>40</FloatingTitleHeight>
+                  </VisualNodeSettings>
+                  <OutliningStatus />
+                  <IsBackwardsNode>false</IsBackwardsNode>
+                  <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+                </TycheGuiNode>
+              </Children>
+              <VisualNodeSettings>
+                <ShowIcon>true</ShowIcon>
+                <ShowTitle>true</ShowTitle>
+                <ShowBorder>true</ShowBorder>
+                <ShowBackground>true</ShowBackground>
+                <IconString></IconString>
+                <TitleLocation>Embed</TitleLocation>
+                <TitleColourString>#FF000000</TitleColourString>
+                <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+                <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+                <BorderColourString>#FF800080</BorderColourString>
+                <IsIconStandardSize>true</IsIconStandardSize>
+                <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+                <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+                <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+                <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+                <FloatingTitleWidth>120</FloatingTitleWidth>
+                <FloatingTitleHeight>40</FloatingTitleHeight>
+              </VisualNodeSettings>
+              <OutliningStatus />
+              <IsBackwardsNode>false</IsBackwardsNode>
+              <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+            </TycheGuiNode>
+          </Children>
+          <VisualNodeSettings>
+            <ShowIcon>true</ShowIcon>
+            <ShowTitle>true</ShowTitle>
+            <ShowBorder>true</ShowBorder>
+            <ShowBackground>true</ShowBackground>
+            <IconString></IconString>
+            <TitleLocation>Embed</TitleLocation>
+            <TitleColourString>#FF000000</TitleColourString>
+            <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+            <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+            <BorderColourString>#FF800080</BorderColourString>
+            <IsIconStandardSize>true</IsIconStandardSize>
+            <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+            <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+            <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+            <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+            <FloatingTitleWidth>120</FloatingTitleWidth>
+            <FloatingTitleHeight>40</FloatingTitleHeight>
+          </VisualNodeSettings>
+          <OutliningStatus />
+          <IsBackwardsNode>false</IsBackwardsNode>
+          <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+        </TycheGuiNode>
+        <TycheGuiNode>
+          <Name>Operation 2</Name>
+          <ElementLeft>-647</ElementLeft>
+          <ElementTop>766</ElementTop>
+          <ElementWidth>250</ElementWidth>
+          <ElementHeight>90</ElementHeight>
+          <Children />
+          <VisualNodeSettings>
+            <ShowIcon>true</ShowIcon>
+            <ShowTitle>true</ShowTitle>
+            <ShowBorder>true</ShowBorder>
+            <ShowBackground>true</ShowBackground>
+            <IconString></IconString>
+            <TitleLocation>Embed</TitleLocation>
+            <TitleColourString>#FF000000</TitleColourString>
+            <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+            <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+            <BorderColourString>#FF800080</BorderColourString>
+            <IsIconStandardSize>true</IsIconStandardSize>
+            <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+            <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+            <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+            <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+            <FloatingTitleWidth>120</FloatingTitleWidth>
+            <FloatingTitleHeight>40</FloatingTitleHeight>
+          </VisualNodeSettings>
+          <OutliningStatus />
+          <IsBackwardsNode>false</IsBackwardsNode>
+          <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+        </TycheGuiNode>
+      </TopLevelGuiNodes>
+      <DebuggingSettings>
+        <BreakOnError>true</BreakOnError>
+        <BreakOnWarning>false</BreakOnWarning>
+        <BreakOnMessage>false</BreakOnMessage>
+      </DebuggingSettings>
+      <DefaultGridCellFormat i:nil="true" />
+      <ModelInspectionSettings viewGlobalProperties="True" viewDescriptionProperties="True" viewTSharpProperties="True" viewGeneralProperties="True" viewInputVariables="True" viewOutputVariables="True" viewNodesWithTSharp="True" viewNodesWithoutTSharp="True" />
+    </TycheModel>
+  </TycheProjectGUIContents>
+</TycheProject>
