@@ -20,7 +20,7 @@ def aggregate_top_n(input, n):
 rawdata = [l.strip() for l in open('2022/1.txt')]
 append_new_line = '\n'.join(rawdata).split('\n\n')
 
-#region Main code
+# Main code
 total_calories = sorted_calorie_aggregate(append_new_line)
 
 #Part 1&2
