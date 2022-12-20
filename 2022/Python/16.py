@@ -13,27 +13,6 @@ def bfs(start, end):
         start = next_step
         depth += 1
 
-data = open('2022/16.txt').read().strip()
-lines = data.split('\n')
-
-valves={}
-
-for l in lines:
-    x=re.split('Valve | has|=|;| valves | valve ',l)
-    valves[x[1]] = {'flow':int(x[3]), 'tunnels': x[5].split(', '),'paths': {}}
-
-keys = sorted([x for x in list(valves.keys()) if valves[x]['flow'] != 0])
-
-for k in keys + ['AA']:
-    for k2 in keys:
-        if k2 != k:
-            valves[k]['paths'][k2] = bfs(valves[k]['tunnels'], k2)
-
-current_valve = 'AA'
-time_remaining = 27
-flow_rate = 0
-flow_accum = 0
-valves_opened = set()
 def flow_count(v,v_o,t_r,c_v,fr,fa):
     v_o2 = copy.deepcopy(v_o)
     while t_r > 0:
@@ -58,6 +37,30 @@ def flow_count(v,v_o,t_r,c_v,fr,fa):
                 t_r-=v[c_v]['paths'][v_bv]
                 c_v=v_bv
     return fa,v_o2
+
+
+
+data = open('2022/16.txt').read().strip()
+lines = data.split('\n')
+
+valves={}
+for l in lines:
+    x=re.split('Valve | has|=|;| valves | valve ',l)
+    valves[x[1]] = {'flow':int(x[3]), 'tunnels': x[5].split(', '),'paths': {}}
+
+keys = sorted([x for x in list(valves.keys()) if valves[x]['flow'] != 0])
+
+for k in keys + ['AA']:
+    for k2 in keys:
+        if k2 != k:
+            valves[k]['paths'][k2] = bfs(valves[k]['tunnels'], k2)
+
+current_valve = 'AA'
+time_remaining = 27
+flow_rate = 0
+flow_accum = 0
+valves_opened = set()
+
 
 p1 = flow_count(valves,valves_opened,time_remaining,current_valve,flow_rate,flow_accum)
 p2 = flow_count(valves,p1[1],time_remaining-1,current_valve,flow_rate,flow_accum)
