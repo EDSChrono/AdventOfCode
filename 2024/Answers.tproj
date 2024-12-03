@@ -43,14 +43,24 @@
           <Description></Description>
           <Author>ed.prestwich</Author>
           <Text>Inputs = ToInteger(StringTrim(StringSplit(FileReadLines("1.txt")," ")));
+
+//Rank tie the two columns
 SortedInputs = CopulaRanks(Inputs);
+
+//Sum distances
 P1 = Sum(Abs(Inputs[0]-Inputs[1]));
 
-WhereLeftInRight = Replace(MultiColumnIndexOf(Inputs[1],Inputs[0]),-1,NumScenarios(Inputs));
-BreakDep = RemoveDependency(WhereLeftInRight);
+//Find the RHS value in the LHS column. -1 if fails to find is replaced with NumScenarios of the input
+WhereRightInLeft = Replace(MultiColumnIndexOf(Inputs[1],Inputs[0]),-1,NumScenarios(Inputs));
 
+//Turns out you cannot dereference the sims dimension of a variabe with a variable that is in the same Dependency Group. Kill dependencies.
+BreakDep = RemoveDependency(WhereRightInLeft);
+
+//Add an extra 0 to the LHS. As it is at index NumScenarios(Inputs) the lookup built in WhereLeftInRight wont break.
 FinalLookup = Glue[sims](Inputs[0],&lt;&lt;0&gt;&gt;);
-Test = If WhereLeftInRight == -1 AND BreakDep then 0 else FinalLookup&lt;&lt;WhereLeftInRight&gt;&gt;;
+
+//Match up RHS to LHS brother. The if statement guarantees that the stochastic lookup will act after the dependency is broken
+Test = BreakDep ? FinalLookup&lt;&lt;WhereRightInLeft&gt;&gt; : 0;
 
 P2 = Sum(Test);</Text>
           <CacheResultValues>true</CacheResultValues>
@@ -79,18 +89,32 @@ P2 = Sum(Test);</Text>
 
 //Extra Entry for no removal of number (aka P1)
 RemovedNumber[RNumber,Number][IteratorSize(Inputs) + 1,IteratorSize(Inputs)] = RNumber == Number ? Blank : Inputs[Number];
+
+//Bunch up the remaining numbers
 ApplyRemovedNumber = Where[Number](RemovedNumber , RemovedNumber != Blank);
+
+//Calculate Differences (manual as Dissipate() does not like Blanks)
 DissipateApplyRemovedNumber[ApplyRemovedNumber] = 
  Number == 0 ? 
   Blank :
   ApplyRemovedNumber[RNumber,Number] - ApplyRemovedNumber[RNumber,Number-1];
 
+//Remove the Blank in position zero
 ApplyRemovedNumberRemoveBlanks = Where[Number](DissipateApplyRemovedNumber , DissipateApplyRemovedNumber != Blank);
+
+//Test if the differences are monotonic
 SignsEqual = Abs(Mean[RNumber,sims](Sign(ApplyRemovedNumberRemoveBlanks))) == 1;
+
+//Test if absolute differences are no larger than 3
 ScaleSmall = All[RNumber,sims](Abs(ApplyRemovedNumberRemoveBlanks) &lt; 4);
+
+//Combine Tests
 ApplyRemovedNumberTest = SignsEqual AND ScaleSmall;
 
+//Final index had no numbers removed (it answers P1)
 P1 = Sum(ToInteger(ApplyRemovedNumberTest[8]));
+
+//Sum across all removal options
 P2 = Sum(ToInteger(Any[sims](ApplyRemovedNumberTest)));</Text>
           <CacheResultValues>true</CacheResultValues>
           <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
