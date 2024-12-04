@@ -176,6 +176,75 @@ Output = Sum(Product[i1,mind,mbla](SplitByComma_Int[:,{0,1},default::0]) * ToInt
           <Children />
           <ChildrenEdges />
         </TycheNode>
+        <TycheNode xmlns="" i:type="TycheNodeOperation">
+          <fAttachedData i:nil="true" />
+          <NodeType>Operation</NodeType>
+          <Name>Four</Name>
+          <Description></Description>
+          <Author>ed.prestwich</Author>
+          <Text>Inputs = Reindex(ToDeterministicVariable(FileReadLines("4.txt")),"r");
+
+//Build row,col grid for wordsearch and flatten into a list in sim dimension. 
+InputSplitCol[r,c][IteratorSize(Inputs),StringLength(Inputs[0])] = StringSubstring(Inputs[r],c,1);
+Letters = ToStochasticVariable(Flatten(InputSplitCol));
+
+//Build corresponding list of r,c coordinates in sim dimension
+InputRow[InputSplitCol] = r;
+InputCol[InputSplitCol] = c;
+Index = Reindex(Reindex({ToStochasticVariable(Flatten(InputRow)),ToStochasticVariable(Flatten(InputCol))}, {"r", "c"}),"coord");
+
+//Define unit vector r,c components for each of the required directions and stack into a single lookup
+RowShifts = {1,1,1,0,-1,-1,-1,0};//For P2 RowShifts = {1,1,-1,-1};
+ColShifts = {1,0,-1,-1,-1,0,1,1};//For P2 ColShifts = {1,-1,-1,1};
+Shifts[dir][{"r","c"}] = {RowShifts,ColShifts};
+
+//Define search parameters. For P2 we shift the steps so that the reference letter is the centre of the built word
+Steps[step][4] = step;//For P2 Steps[step][3] = step-1;
+RequiredWord[Steps] = {"X","M","A","S"};//For P2 RequiredWord[Steps] = {"M","A","S"}
+
+//Build list of relative positions to look up letters in grid to build word
+WordLookupMatrix[Steps] = Shifts * Steps[step];
+
+//Optional Filtering. If Our base letter is not right then why bother? Append a default for failed lookups later
+FilteredIndex = Where[sims](Index, Letters == RequiredWord[IntegerIndex(Steps,0)]);
+FilteredLetters = Glue[sims](Where[sims](Letters, Letters == RequiredWord[IntegerIndex(Steps,0)]),ToString(Blank));
+
+//Combine with position of first letter to get absolut lookups relative to each starting letter
+WordCoordinates[FilteredIndex] = FilteredIndex[coord] + WordLookupMatrix[:, coord];
+
+//Where in the list of letters does the required letter live?
+WordSimLookup[Steps,RowShifts] = Replace(MultiColumnIndexOf(WordCoordinates[:,step,i1],FilteredIndex), -1, NumScenarios(FilteredIndex));
+
+//Get the letter
+Words[WordSimLookup] = FilteredLetters&lt;&lt;WordSimLookup[step,i1]&gt;&gt;;
+
+//Do we have a match?
+WordMatch = All[step,mind](Words == RequiredWord);
+
+//How meny matches do we have around the base letter
+WordMatchCountByCell = Sum[sims](ToInteger(WordMatch));
+
+//Print Outputs
+P1Test = Sum(WordMatchCountByCell);
+P2Test = Sum(ToInteger(WordMatchCountByCell == 2));
+
+</Text>
+          <CacheResultValues>true</CacheResultValues>
+          <NumScenariosSourceType>Unspecified</NumScenariosSourceType>
+          <NumScenariosSourceNodeName></NumScenariosSourceNodeName>
+          <NumScenariosSourceVariableName></NumScenariosSourceVariableName>
+          <NumScenariosDefault>0</NumScenariosDefault>
+          <IsUserDefinedFunctionContents>false</IsUserDefinedFunctionContents>
+          <Breakpoints />
+          <NestedSettings xmlns="" i:type="TycheSettingsContainer">
+            <InputVariables />
+            <OutputVariables />
+            <IsContainer>false</IsContainer>
+            <RandomSeed>1535424799</RandomSeed>
+          </NestedSettings>
+          <Children />
+          <ChildrenEdges />
+        </TycheNode>
       </TopLevelModelNodes>
       <TopLevelModelEdges />
     </TycheEngine>
@@ -248,6 +317,36 @@ Output = Sum(Product[i1,mind,mbla](SplitByComma_Int[:,{0,1},default::0]) * ToInt
           <Name>Three</Name>
           <ElementLeft>6</ElementLeft>
           <ElementTop>174</ElementTop>
+          <ElementWidth>250</ElementWidth>
+          <ElementHeight>90</ElementHeight>
+          <Children />
+          <VisualNodeSettings>
+            <ShowIcon>true</ShowIcon>
+            <ShowTitle>true</ShowTitle>
+            <ShowBorder>true</ShowBorder>
+            <ShowBackground>true</ShowBackground>
+            <IconString></IconString>
+            <TitleLocation>Embed</TitleLocation>
+            <TitleColourString>#FF000000</TitleColourString>
+            <BackgroundColour1String>#FFFAFBE9</BackgroundColour1String>
+            <BackgroundColour2String>#FFFFD700</BackgroundColour2String>
+            <BorderColourString>#FF800080</BorderColourString>
+            <IsIconStandardSize>true</IsIconStandardSize>
+            <FloatingTitleBackgroundColourString>#FFFFFFFF</FloatingTitleBackgroundColourString>
+            <FloatingTitleBorderColourString>#FF800080</FloatingTitleBorderColourString>
+            <FloatingTitleOffsetX>0</FloatingTitleOffsetX>
+            <FloatingTitleOffsetY>0</FloatingTitleOffsetY>
+            <FloatingTitleWidth>120</FloatingTitleWidth>
+            <FloatingTitleHeight>40</FloatingTitleHeight>
+          </VisualNodeSettings>
+          <OutliningStatus />
+          <IsBackwardsNode>false</IsBackwardsNode>
+          <ExcludeFromModelInspection>false</ExcludeFromModelInspection>
+        </TycheGuiNode>
+        <TycheGuiNode>
+          <Name>Four</Name>
+          <ElementLeft>9</ElementLeft>
+          <ElementTop>258</ElementTop>
           <ElementWidth>250</ElementWidth>
           <ElementHeight>90</ElementHeight>
           <Children />
