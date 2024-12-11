@@ -10,6 +10,7 @@ def peak_finder(G,r,c,S=set(),step=0,T=0):
     if step == 9:
         S.add((r,c))
         T+=1
+        return(S,T)
     if r+1 < len(G):
         if G[r+1][c] == step+1:
             ST = peak_finder(G,r+1,c,S,step+1,T)
