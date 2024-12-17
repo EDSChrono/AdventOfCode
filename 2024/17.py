@@ -1,13 +1,11 @@
 import re
 import math
 
-# Open and read the file
 file_path = "2024/17.txt"
 
 with open(file_path, "r") as file:
     file_content = file.read()
 
-# Process data into registers and program
 ProcessData = lambda content: [
     [int(i) for i in re.findall(r'\d+', content.split("\n\n")[0])],
     [int(i) for i in re.findall(r'\d+', content.split("\n\n")[1])]
@@ -58,17 +56,14 @@ def apply_instruction(instruction, literal_operand, registers, instruction_point
         instruction_pointer += 2
     return instruction_pointer, registers, outputs
 
-# Initialize registers, program, and output
 ip = 0
 registers = data[0]
 program = data[1]
 output = []
 
-# Execute the program
 while ip < len(program):
     ip, registers, output = apply_instruction(program[ip], program[ip + 1], registers, ip, output)
 
-# Print the final output as a comma-separated string
 print('p1='+','.join(map(str, output)))
 
 possibleanswers={0}

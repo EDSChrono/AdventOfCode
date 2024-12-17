@@ -1,6 +1,5 @@
 import re
 
-# Open and read the file
 file_path = "2024/13.txt"
 
 with open(file_path, "r") as file:
@@ -8,7 +7,6 @@ with open(file_path, "r") as file:
 
 ProcessData = lambda file_content:[[int(i) for i in re.findall(r'\d+',machine)] for machine in file_content.split('\n'*2)]
 
-# Print the content
 values = ProcessData(file_content)
 
 

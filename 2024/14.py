@@ -56,22 +56,20 @@ def quad_count(robots):
 
 R=101
 C=103  
-#moved_robots=move_robots(robots,100,R,C) 
-#p1 = prod(list(quad_count(moved_robots)))
+moved_robots=move_robots(robots,100,R,C) 
+p1 = prod(list(quad_count(moved_robots)))
+
 p2dist = 1e12
 s=0
 for i in range(10000):
     if i==0:
         print(robots[0])
-    #print("i="+str(i))
     this_dist=prod(list(quad_count(move_robots_once(robots,R,C) )))
     if this_dist < p2dist:
         p2dist=this_dist
         s=i+1
         print(s)
-#print(p1)
+
+print(p1)
 print(p2dist,s)
-#for i in range(100):
-#    x=move_robots(inrobots,i,R,C)
-#    print(x)
     
